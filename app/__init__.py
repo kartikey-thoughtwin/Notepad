@@ -11,5 +11,10 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from . import routes, models
+
+# Register blueprint
+from .routes import note_bp
+app.register_blueprint(note_bp)
+
+
 
