@@ -1,54 +1,62 @@
 from flask_restx import Resource
-from flask import request, Blueprint, Response, jsonify
+from flask import request, Blueprint, jsonify
 from app import api, db
 from app.models import User
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound
-import json
-from app.utils.utils import validate_user_data
+from app.utils.utils import validate_user_data, make_response
 
 user_bp = Blueprint("user", __name__)
 
 
 class UserAPI(Resource):
+    """
+    RESTful API for managing users.
+    """
 
     def get(self, user_id=None):
+        """
+        GET method to retrieve either all users or a specific user by ID.
+
+        Args:
+            user_id (int, optional): ID of the user to retrieve. Defaults to None.
+
+        Returns:
+            Response: JSON response with status, message, and data.
+        """
         try:
             if user_id is None:
                 users = User.query.all()
-                response_data = {
-                    "status": True,
-                    "data": [user.to_dict() for user in users],
-                    "message": "Users retrieved successfully",
-                }
-                return jsonify(response_data)
+                return make_response(
+                    True,
+                    message="Users retrieved successfully",
+                    data=[user.to_dict() for user in users],
+                )
+
             user = User.query.get_or_404(user_id)
-            response_data = {
-                "status": True,
-                "data": user.to_dict(),
-                "message": "User retrieved successfully",
-            }
-            return jsonify(response_data)
-        except SQLAlchemyError as e:
-            response_data = {"status": False, "error": str(e)}
-            return Response(
-                json.dumps(response_data), status=500, content_type="application/json"
-            )
-        except NotFound:
-            response_data = {"status": False, "error": "User not found"}
-            return Response(
-                json.dumps(response_data), status=404, content_type="application/json"
+            return make_response(
+                True, message="User retrieved successfully", data=user.to_dict()
             )
 
+        except SQLAlchemyError as e:
+            return make_response(False, message=str(e), status_code=500)
+
+        except NotFound:
+            return make_response(False, message="User not found", status_code=404)
+
     def post(self):
+        """
+        POST method to create a new user.
+
+        Returns:
+            Response: JSON response containing status, message, and data.
+        """
         try:
             data = request.get_json()
             validation_result = validate_user_data(data)
             if not validation_result["status"]:
-                return Response(
-                    json.dumps(validation_result),
-                    status=400,
-                    content_type="application/json",
+                return make_response(
+                    False, message=validation_result["message"], status_code=400
                 )
 
             new_user = User(
@@ -59,33 +67,33 @@ class UserAPI(Resource):
             )
             db.session.add(new_user)
             db.session.commit()
-
-            response_data = {
-                "message": "User Created Successfully",
-                "status": True,
-                "data": new_user.to_dict(),
-            }
-
-            return Response(
-                json.dumps(response_data), status=201, content_type="application/json"
+            return make_response(
+                True,
+                message="User Created Successfully",
+                data=new_user.to_dict(),
+                status_code=201,
             )
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            response_data = {"status": False, "error": str(e)}
-            return Response(
-                json.dumps(response_data), status=500, content_type="application/json"
-            )
+            return make_response(False, message=str(e), status_code=500)
 
     def put(self, user_id):
+        """
+        PUT method to update a user by ID.
+
+        Args:
+            user_id (int): ID of the user to update.
+
+        Returns:
+            Response: JSON response containing status, message, and data.
+        """
         try:
             data = request.get_json()
             validation_result = validate_user_data(data)
             if not validation_result["status"]:
-                return Response(
-                    json.dumps(validation_result),
-                    status=400,
-                    content_type="application/json",
+                return make_response(
+                    False, message=validation_result["message"], status_code=400
                 )
 
             user = User.query.get_or_404(user_id)
@@ -94,29 +102,27 @@ class UserAPI(Resource):
             user.email = data["email"]
             user.password_hash = data["password_hash"]
             db.session.commit()
-
-            response_data = {
-                "status": True,
-                "data": user.to_dict(),
-                "message": "User updated successfully",
-            }
-            return Response(
-                json.dumps(response_data), status=200, content_type="application/json"
+            return make_response(
+                True, message="User updated successfully", data=user.to_dict()
             )
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            response_data = {"status": False, "error": str(e)}
-            return Response(
-                json.dumps(response_data), status=500, content_type="application/json"
-            )
+            return make_response(False, message=str(e), status_code=500)
+
         except NotFound:
-            response_data = {"status": False, "error": "User not found"}
-            return Response(
-                json.dumps(response_data), status=404, content_type="application/json"
-            )
+            return make_response(False, message="User not found", status_code=404)
 
     def patch(self, user_id):
+        """
+        PATCH method Partially updates an existing user by `user_id`.
+
+        Args:
+            user_id (int): ID of the user to update.
+
+        Returns:
+            Response: JSON response containing status, message, and data.
+        """
         try:
             data = request.get_json()
             user = User.query.get_or_404(user_id)
@@ -131,55 +137,46 @@ class UserAPI(Resource):
                 user.password_hash = data["password_hash"]
 
             db.session.commit()
-
-            response_data = {
-                "status": True,
-                "data": user.to_dict(),
-                "message": "User updated successfully",
-            }
-            return Response(
-                json.dumps(response_data), status=200, content_type="application/json"
+            return make_response(
+                True, message="User updated successfully", data=user.to_dict()
             )
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            response_data = {"status": False, "error": str(e)}
-            return Response(
-                json.dumps(response_data), status=500, content_type="application/json"
-            )
+            return make_response(False, message=str(e), status_code=500)
+
         except NotFound:
-            response_data = {"status": False, "error": "User not found"}
-            return Response(
-                json.dumps(response_data), status=404, content_type="application/json"
-            )
+            return make_response(False, message="User not found", status_code=404)
 
     def delete(self, user_id):
+        """
+        DELETE method to delete a user by ID.
+
+        Args:
+            user_id (int): ID of the user to delete.
+
+        Returns:
+            Response: Empty response with HTTP status code 204 NO CONTENT.
+        """
         try:
             user = User.query.get_or_404(user_id)
             db.session.delete(user)
             db.session.commit()
-
-            response_data = {"status": True, "message": "User deleted successfully"}
-            return Response(
-                json.dumps(response_data), status=200, content_type="application/json"
+            return make_response(
+                True, message="User deleted successfully", status_code=200
             )
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            response_data = {"status": False, "error": str(e)}
-            return Response(
-                json.dumps(response_data), status=500, content_type="application/json"
-            )
+            return make_response(False, message=str(e), status_code=500)
+
         except NotFound:
-            response_data = {"status": False, "error": "User not found"}
-            return Response(
-                json.dumps(response_data), status=404, content_type="application/json"
-            )
+            return make_response(False, message="User not found", status_code=404)
 
 
-api.add_resource(UserAPI, "/users/", methods=["GET"])
-api.add_resource(UserAPI, "/users/<int:user_id>/", methods=["GET"])
+api.add_resource(UserAPI, "/users/list/", methods=["GET"])
+api.add_resource(UserAPI, "/users/get/<int:user_id>/", methods=["GET"])
 api.add_resource(UserAPI, "/users/post/", methods=["POST"])
-api.add_resource(UserAPI, "/users/patch/", methods=["PATCH"])
+api.add_resource(UserAPI, "/users/patch/<int:user_id>/", methods=["PATCH"])
 api.add_resource(UserAPI, "/users/put/<int:user_id>/", methods=["PUT"])
 api.add_resource(UserAPI, "/users/delete/<int:user_id>/", methods=["DELETE"])

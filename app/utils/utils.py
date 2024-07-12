@@ -1,4 +1,7 @@
-# utils.py
+import json
+from flask import Response
+
+
 def validate_data(data):
     if not data:
         return {"status": False, "message": "Enter JSON data"}
@@ -44,3 +47,10 @@ def validate_user_data(data):
         return {"status": False, "message": "Enter the password_hash"}
     else:
         return {"status": True, "data": data}
+
+
+def make_response(status, message=None, data=None, status_code=200):
+    response_data = {"status": status, "message": message, "data": data}
+    return Response(
+        json.dumps(response_data), status=status_code, content_type="application/json"
+    )
