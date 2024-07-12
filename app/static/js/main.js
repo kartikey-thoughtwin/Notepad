@@ -1,36 +1,100 @@
-$(document).ready(function () {
-    // Edit note button click handler
-    $('.edit-note').on('click', function() {
-        var noteId = $(this).attr('data-id');
+function updateRecords() {
+    $.ajax({
+        url: '/notes/list/',
+        method: 'GET',
+        success: function(data) {
+            var notesHtml = data.data.map(note => `
+                <div class="note-item">
+                    <div class="note-title">${note.title}</div>
+                    <div class="note-content">${note.content}</div>
+                    <div class="note-actions">
+                        <a href="#" class="edit-note" data-id="${note.id}"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="#" class="delete-note" data-id="${note.id}"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+            `).join('');
+            $('.note-list').html(notesHtml);
+        },
+        error: function() {
+            toastr.error('Data updation failed');
+        }
+    });
+}
 
+
+$(document).ready(function () {
+
+    // For Edit
+    $(document).on('click', '.edit-note', function() {
+        var noteId = $(this).attr('data-id');
+    
         // Load the edit note modal HTML from the static directory
         $.get('/static/html/editNoteModal.html', function (modalHtml) {
             // Append the modal HTML to the body
             $('body').append(modalHtml);
-
+    
             // Get the note data via AJAX
             $.ajax({
-                url: '/notes/' + noteId,
+                url: '/notes/get/' + noteId,
                 method: 'GET',
                 success: function (data) {
                     // Populate the modal with the retrieved data
                     $('#editNoteModal').find('input[name="title"]').val(data.data.title);
                     $('#editNoteModal').find('textarea[name="content"]').val(data.data.content);
                     $('#updateNoteForm').attr('data-note-id', noteId);
-
+    
                     // Populate the categories dropdown
                     var categoriesHtml = categories.map(category => `
                         <option value="${category.id}" ${data.data.category_id == category.id ? 'selected' : ''}>${category.name}</option>
                     `).join('');
-
-                    $('#editNoteModal').find('select[name="noteCategory"]').append(categoriesHtml);
-
+    
+                    $('#editNoteModal').find('select[name="noteCategory"]').html(categoriesHtml);
+    
                     // Open the modal
                     $('#editNoteModal').modal('show');
-
+    
                     // Remove the modal from the DOM after it is closed
                     $('#editNoteModal').on('hidden.bs.modal', function () {
                         $(this).remove();
+                    });
+    
+                    $('#updateNoteForm').off('submit').on('submit', function(event) {
+                        event.preventDefault(); // Prevent the default form submission
+    
+                        // Get the note ID from the form's data attribute
+                        var noteId = $(this).data('note-id');
+    
+                        // Get the form data    
+                        var formData = {
+                            title: $('#editNoteModal input[name="title"]').val(),
+                            category_id: $('#editNoteModal select[name="noteCategory"]').val(),
+                            content: $('#editNoteModal textarea[name="content"]').val(),
+                            user_id: 1 // Assuming user_id is fixed for now
+                        };
+    
+                        // Send the PUT request using AJAX
+                        $.ajax({
+                            url: `/notes/put/${noteId}`,
+                            type: 'PUT',
+                            data: JSON.stringify(formData),
+                            contentType: 'application/json',
+                            success: function(response) {
+                                // Close the modal
+                                $('#editNoteModal').modal('hide');
+    
+                                // Show success toast
+                                toastr.success('Note updated successfully');
+    
+                                // Update the specific note item in the list
+                                updateRecords()
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle errors if any
+                                console.error('Update error:', error);
+                                // Show error toast
+                                showToast('Something went wrong', 'red');
+                            }
+                        });
                     });
                 },
                 error: function (error) {
@@ -41,110 +105,9 @@ $(document).ready(function () {
     });
 
 
-    function fetch_data() {
-        $.ajax({
-            url: '/notes',
-            method: 'GET',
-            success: function (data) {
-
-                console.log(data);
-            }
-        });
-    }
-
-    // Update note form submission handler
-    $('#updateNoteForm').on('submit', function(event) {
-        console.log('Update note form submitted');
-        event.preventDefault(); // Prevent the default form submission
-
-        // Get the note ID from the form's data attribute
-        var noteId = $(this).data('note-id');
-
-        // Get the form data    
-        var formData = {
-            title: $('#editNoteModal input[name="title"]').val(),
-            category_id: $('#editNoteModal select[name="noteCategory"]').val(),
-            content: $('#editNoteModal textarea[name="content"]').val(),
-            user_id: 1 // Assuming user_id is fixed for now
-        };
-
-        // Send the PUT request using AJAX
-        $.ajax({
-            url: `/notes/put/${noteId}`,
-            type: 'PUT',
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            success: function(response) {
-                fetch_data(); // Fetch the updated data
-                console.log('Note updated successfully:', response);
-                // Store a flag in localStorage to show the toast after page reload
-                localStorage.setItem('showUpdateSuccessToast', 'true');
-
-                // Reload the page
-                // location.reload();
-            },
-            error: function(xhr, status, error) {
-                // Handle errors if any
-                console.error('Update error:', error);
-                // Show error toast
-                showToast('Something went wrong', 'red');
-            }
-        });
-    });
-
-    // Check if the success toast should be shown after page reload
-    if (localStorage.getItem('showSuccessToast') === 'true') {
-        // Show success toast
-        showToast('Note created successfully', 'green');
-
-        // Remove the flag from localStorage
-        localStorage.removeItem('showSuccessToast');
-    }
-
-    // Check if the update success toast should be shown after page reload
-    if (localStorage.getItem('showUpdateSuccessToast') === 'true') {
-        // Show update success toast
-        showToast('Note updated successfully', 'green');
-
-        // Remove the flag from localStorage
-        localStorage.removeItem('showUpdateSuccessToast');
-    }
-
-    $('#createNoteForm').on('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-        
-        // Get the form data
-        var formData = {
-            user_id : 1,
-            title: $('input[placeholder="Note Title"]').val(),
-            category_id: $('#noteCategory').val(),
-            content: $('textarea[placeholder="Note Content"]').val()
-        };
-
-        $.ajax({
-            url: '/notes/post/',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function (data) {
-                // Store a flag in localStorage to show the toast after page reload
-                localStorage.setItem('showSuccessToast', 'true');
-
-                // Reload the page
-                location.reload();
-            },
-            error: function (error) {
-                console.log('Error creating note:', error);
-                // Show error toast
-                showToast('Something went wrong', 'red');
-            }
-        });
-    });
-
-    // Delete note button click handler
-    $('.delete-note').click(function (e) {
+    $(document).on('click', '.delete-note', function (e) {
         e.preventDefault();
-        var noteId = $(this).data('id'); // Get the note ID from the data attribute
+        var noteId = $(this).attr('data-id');
     
         // Load the confirmation modal HTML
         $.get('/static/html/confirmationModal.html', function (data) {
@@ -166,46 +129,73 @@ $(document).ready(function () {
                     url: '/notes/delete/' + noteId,
                     method: 'DELETE',
                     success: function () {
-                        // Store a flag in localStorage to show the toast after page reload
-                        localStorage.setItem('showDeleteSuccessToast', 'true');
+                        // Close the modal
+                        $('#confirmationModal').remove();
     
-                        // Reload the page
-                        location.reload();
+                        // Show success toast
+                        toastr.success('Note deleted successfully');
+    
+                        // Refresh the records list
+                        updateRecords();
                     },
                     error: function (error) {
                         console.log('Error deleting note:', error);
                         // Show error toast
-                        showToast('Something went wrong', 'red');
+                        toastr.error('Something went wrong');
                     }
                 });
-    
-                // Remove the modal
-                $('#confirmationModal').remove();
             });
         });
     });
 
 
-    // Check if the delete success toast should be shown after page reload
-    if (localStorage.getItem('showDeleteSuccessToast') === 'true') {
-        // Show delete success toast
-        showToast('Note deleted successfully', 'red');
+    function fetch_data() {
+        $.ajax({
+            url: '/notes',
+            method: 'GET',
+            success: function (data) {
 
-        // Remove the flag from localStorage
-        localStorage.removeItem('showDeleteSuccessToast');
+                console.log(data);
+            }
+        });
     }
 
-    // Function to show toast with dynamic message and color
-    function showToast(message, color) {
-        $('body').append(`<div id="dynamicToast" style="position: fixed; top: -50px; right: 20px; background-color: ${color}; color: white; padding: 10px; border-radius: 5px; transition: top 0.5s;">${message}</div>`);
-        setTimeout(function() {
-            $('#dynamicToast').css('top', '20px');
-        }, 100); // Small delay to trigger the transition
-        setTimeout(function() {
-            $('#dynamicToast').css('top', '-50px');
-            setTimeout(function() {
-                $('#dynamicToast').remove();
-            }, 500); // Wait for the transition to complete before removing
-        }, 3000);
-    }
+
+    // Handle the create note form submission
+    $(document).on('submit', '#createNoteForm', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the form data
+        var formData = {
+            user_id: 1,
+            title: $('input[placeholder="Note Title"]').val(),
+            category_id: $('#noteCategory').val(),
+            content: $('textarea[placeholder="Note Content"]').val()
+        };
+
+        $.ajax({
+            url: '/notes/post/',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(data) {
+                // Show success toast
+                toastr.success('Note created successfully');
+
+                // Clear the form
+                $('#createNoteForm')[0].reset();
+
+                // Fetch and render updated records
+                updateRecords();
+            },
+            error: function(error) {
+                console.log('Error creating note:', error);
+                // Show error toast
+                toastr.error('Something went wrong');
+            }
+        });
+    });
+
+
+    
 });
