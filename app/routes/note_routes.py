@@ -1,13 +1,27 @@
 from flask_restx import Resource
-from flask import request, Blueprint, Response
+from flask import request, Blueprint, Response, render_template
 from app import api, db
-from app.models import Note
+from app.models import Note, Category
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound
 import json
 from app.utils.utils import validate_note_data
 
 note_bp = Blueprint("notes", __name__)
+
+
+@note_bp.route("/home", methods=["GET"])
+def home():
+    try:
+        notes = Note.query.all()
+        categories = Category.query.all()
+        context = {
+            "notes": [note.to_dict() for note in notes],
+            "categories": [category.to_dict() for category in categories],
+        }
+        return render_template("base.html", context=context)
+    except SQLAlchemyError as e:
+        return render_template("base.html", error=str(e))
 
 
 class NotesAPI(Resource):
@@ -65,6 +79,8 @@ class NotesAPI(Resource):
             )
             db.session.add(new_note)
             db.session.commit()
+
+            # print(">>>>>>>>>>>>>...",new_note.__dict__)
 
             response_data = {
                 "message": "Note Created Successfully",

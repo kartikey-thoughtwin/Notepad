@@ -97,72 +97,54 @@
             <div class="col-md-4">
                 <h5>Notes</h5>
                 <div class="note-list">
+                    {% for note in context.notes %}
                     <div class="note-item">
-                        <div class="note-title">Note Title</div>
-                        <div class="note-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                        <div class="note-title">{{note.title}}</div>
+                        <div class="note-content">{{note.content}}</div>
                         <div class="note-actions">
-                            <a href="index" class="edit-note"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="#" class="delete-note"><i class="fas fa-trash"></i></a>
+                            <a href="#" class="edit-note" data-id={{note.id}}><i class="fas fa-pencil-alt"></i></a>
+                            <a href="#" class="delete-note" data-id="{{note.id}}"><i class="fas fa-trash"></i></a>
                         </div>
                     </div>
-                    <div class="note-item">
-                        <div class="note-title">Another Note</div>
-                        <div class="note-content">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </div>
-                        <div class="note-actions">
-                            <a href="index" class="edit-note"><i class="fas fa-pencil-alt"></i></a>
-                            <a href="#" class="delete-note"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="note-form">
                     <h5>New Note</h5>
-                    <form>
+                    <form id="createNoteForm">
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Note Title">
+                            <input type="text" class="form-control" name="title" placeholder="Note Title">
                         </div>
                         <div class="form-group">
                             <select class="form-control" id="noteCategory" name="noteCategory">
-                                <!-- Example options -->
-                                <!-- <option value="1">Category 1</option>
-                                <option value="2">Category 2</option>
-                                <option value="3">Category 3</option> -->
-                            {% for category in categories %}
+                            <option value="" disabled selected>---  Select Category  ---</option>
+                            {% for category in context.categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" rows="8" placeholder="Note Content"></textarea>
+                            <textarea class="form-control" name="content" rows="8" placeholder="Note Content"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Note</button>
+                    </form>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
-        $(document).ready(function () {
-            $('.edit-note').click(function (e) {
-                e.preventDefault();
-                console.log('Edit note clicked');
-
-            });
-
-            $('.delete-note').click(function (e) {
-                e.preventDefault();
-                console.log('Delete note clicked');
-            });
-        });
+        var categories = {{ context.categories | tojson | safe }};
     </script>
+    
 </body>
 
 </html>
