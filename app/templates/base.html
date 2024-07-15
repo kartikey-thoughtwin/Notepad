@@ -114,10 +114,10 @@
                     <h5>New Note</h5>
                     <form id="createNoteForm">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="title" placeholder="Note Title" required>
+                            <input type="text" class="form-control" name="title" placeholder="Note Title" >
                         </div>
                         <div class="form-group">
-                            <select class="form-control" id="noteCategory" name="noteCategory" required>
+                            <select class="form-control" id="noteCategory" name="noteCategory" >
                             <option value="" disabled selected>---  Select Category  ---</option>
                             {% for category in context.categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
@@ -125,7 +125,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" name="content" rows="8" placeholder="Note Content" required></textarea>
+                            <textarea class="form-control" name="content" rows="8" placeholder="Note Content" ></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Note</button>
                     </form>
