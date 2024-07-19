@@ -10,11 +10,10 @@ app.config.from_object(Config)
 # Initialize database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
+app.config['SECRET_KEY']='thisissecretkey'
 
 # Register blueprint
-from .routes import note_bp
+from .routes import note_bp,category_bp, user_bp
 app.register_blueprint(note_bp)
-
-
-
+app.register_blueprint(category_bp)
+app.register_blueprint(user_bp)
