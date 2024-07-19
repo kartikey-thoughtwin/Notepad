@@ -1,182 +1,79 @@
-from flask_restx import Resource
-from flask import request, Blueprint, jsonify
-from app import api, db
-from app.models import User
-from sqlalchemy.exc import SQLAlchemyError
-from werkzeug.exceptions import NotFound
-from app.utils.utils import validate_user_data, make_response
+from flask_restful import Resource, Api
+from app import app
+from flask import Blueprint, request, jsonify
+from flask_bcrypt import Bcrypt 
+from app.models.user import User
+import re
+from app import db
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 
-user_bp = Blueprint("user", __name__)
+user_bp = Blueprint('users',__name__)
+api = Api(user_bp)
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 
-class UserAPI(Resource):
-    """
-    RESTful API for managing users.
-    """
+def validate_user_data(data):
+    email = data.get("email")
+    username = data.get("username", None)
+    name = data.get("name", None)
+    password = data.get("password_hash", None)
+    
+    if name is None or str(name).strip() == "" or name != str(name):
+        return {'Error': 'Please enter a valid name'}
+    
+    if User.query.filter_by(username=username).first() or len(str(username)) <= 4 or str(username).strip() == "" or username is None or username != str(username):
+        return {'Error': 'Username is already present or username must contain at least 5 characters'}
+    
+    if User.query.filter_by(email=email).first():
+        return {'Error': 'Email is already present'}
+    
+    if email is None:
+        return {'Error': 'Please enter your email'}
+    
+    regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    if not re.fullmatch(regex, email):
+        return {'Error': 'Please enter a valid email'}
+    
+    if password is None or len(password) < 8:
+        return {'Error': 'Password must be at least 8 characters long'}
 
-    def get(self, user_id=None):
-        """
-        GET method to retrieve either all users or a specific user by ID.
+    return None 
 
-        Args:
-            user_id (int, optional): ID of the user to retrieve. Defaults to None.
 
-        Returns:
-            Response: JSON response with status, message, and data.
-        """
-        try:
-            if user_id is None:
-                users = User.query.all()
-                return make_response(
-                    True,
-                    message="Users retrieved successfully",
-                    data=[user.to_dict() for user in users],
-                )
+class Hello(Resource):
+      def post(self):
+        data = request.get_json()
+        validation_error = validate_user_data(data)
+        if validation_error:
+            return jsonify(validation_error)
+    
+        user = User(
+            name=data['name'],
+            username=data['username'],
+            email=data['email'],
+            password_hash=bcrypt.generate_password_hash(data['password_hash']).decode('utf-8')
+        )
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({'data': 'User is created'})
 
-            user = User.query.get_or_404(user_id)
-            return make_response(
-                True, message="User retrieved successfully", data=user.to_dict()
-            )
 
-        except SQLAlchemyError as e:
-            return make_response(False, message=str(e), status_code=500)
-
-        except NotFound:
-            return make_response(False, message="User not found", status_code=404)
-
-    def post(self):
-        """
-        POST method to create a new user.
-
-        Returns:
-            Response: JSON response containing status, message, and data.
-        """
-        try:
+class LoginView(Resource):
+        def post(self):
             data = request.get_json()
-            validation_result = validate_user_data(data)
-            if not validation_result["status"]:
-                return make_response(
-                    False, message=validation_result["message"], status_code=400
-                )
+            username = data['username']
+            password = data['password_hash']
+            print('Received data:', username , password)
 
-            new_user = User(
-                name=data["name"],
-                username=data["username"],
-                email=data["email"],
-                password_hash=data["password_hash"],
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            return make_response(
-                True,
-                message="User Created Successfully",
-                data=new_user.to_dict(),
-                status_code=201,
-            )
+            user = User.query.filter_by(username=username).first()
 
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            return make_response(False, message=str(e), status_code=500)
-
-    def put(self, user_id):
-        """
-        PUT method to update a user by ID.
-
-        Args:
-            user_id (int): ID of the user to update.
-
-        Returns:
-            Response: JSON response containing status, message, and data.
-        """
-        try:
-            data = request.get_json()
-            validation_result = validate_user_data(data)
-            if not validation_result["status"]:
-                return make_response(
-                    False, message=validation_result["message"], status_code=400
-                )
-
-            user = User.query.get_or_404(user_id)
-            user.name = data["name"]
-            user.username = data["username"]
-            user.email = data["email"]
-            user.password_hash = data["password_hash"]
-            db.session.commit()
-            return make_response(
-                True, message="User updated successfully", data=user.to_dict()
-            )
-
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            return make_response(False, message=str(e), status_code=500)
-
-        except NotFound:
-            return make_response(False, message="User not found", status_code=404)
-
-    def patch(self, user_id):
-        """
-        PATCH method Partially updates an existing user by `user_id`.
-
-        Args:
-            user_id (int): ID of the user to update.
-
-        Returns:
-            Response: JSON response containing status, message, and data.
-        """
-        try:
-            data = request.get_json()
-            user = User.query.get_or_404(user_id)
-
-            if "name" in data:
-                user.name = data["name"]
-            if "username" in data:
-                user.username = data["username"]
-            if "email" in data:
-                user.email = data["email"]
-            if "password_hash" in data:
-                user.password_hash = data["password_hash"]
-
-            db.session.commit()
-            return make_response(
-                True, message="User updated successfully", data=user.to_dict()
-            )
-
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            return make_response(False, message=str(e), status_code=500)
-
-        except NotFound:
-            return make_response(False, message="User not found", status_code=404)
-
-    def delete(self, user_id):
-        """
-        DELETE method to delete a user by ID.
-
-        Args:
-            user_id (int): ID of the user to delete.
-
-        Returns:
-            Response: Empty response with HTTP status code 204 NO CONTENT.
-        """
-        try:
-            user = User.query.get_or_404(user_id)
-            db.session.delete(user)
-            db.session.commit()
-            return make_response(
-                True, message="User deleted successfully", status_code=200
-            )
-
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            return make_response(False, message=str(e), status_code=500)
-
-        except NotFound:
-            return make_response(False, message="User not found", status_code=404)
+            if user and bcrypt.check_password_hash(user.password_hash, password):
+                access_token = create_access_token(identity=user.id)
+                return jsonify({'message': 'Login Success', 'access_token': access_token})
+            else:
+                return jsonify({'message': 'Login Failed'}), 401
 
 
-api.add_resource(UserAPI, "/users/list/", methods=["GET"])
-api.add_resource(UserAPI, "/users/get/<int:user_id>/", methods=["GET"])
-api.add_resource(UserAPI, "/users/post/", methods=["POST"])
-api.add_resource(UserAPI, "/users/patch/<int:user_id>/", methods=["PATCH"])
-api.add_resource(UserAPI, "/users/put/<int:user_id>/", methods=["PUT"])
-api.add_resource(UserAPI, "/users/delete/<int:user_id>/", methods=["DELETE"])
+api.add_resource(Hello,"/", methods=['POST'])
+api.add_resource(LoginView,"/login",methods=['POST'])

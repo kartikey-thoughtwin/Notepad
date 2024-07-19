@@ -11,7 +11,7 @@ api = Api(app, version="1.0", title="Notes API", description="A simple Notes API
 # Initialize database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
+app.config['SECRET_KEY']='thisissecretkey'
 
 # Register blueprint
 from .routes import note_bp
