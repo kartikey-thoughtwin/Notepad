@@ -11,3 +11,12 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "username": self.username,
+            "email": self.email,
+            "password_hash": self.password_hash
+        }

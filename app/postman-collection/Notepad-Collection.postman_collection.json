@@ -1,0 +1,1288 @@
+{
+	"info": {
+		"_postman_id": "267ffde5-2bb6-463f-9669-a5469af001f1",
+		"name": "Notepad-Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29670808"
+	},
+	"item": [
+		{
+			"name": "NoteRoutes",
+			"item": [
+				{
+					"name": "Create-Note",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Sample Note Title\",\n    \"content\": \"This is the content of the sample note.\",\n    \"user_id\": 1,\n    \"category_id\": 1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/notes/post/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"post",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create-Notes",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Sample Note Title\",\n    \"content\": \"This is the content of the sample note.\",\n    \"user_id\": 1,\n    \"category_id\": 1\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/notes/post/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"post",
+										""
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:02:34 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "191"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Note Created Successfully\",\n    \"status\": true,\n    \"data\": {\n        \"id\": 2,\n        \"title\": \"Sample Note Title\",\n        \"content\": \"This is the content of the sample note.\",\n        \"user_id\": 1,\n        \"category_id\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Notes-List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/notes/list/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"list",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Notes-List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/notes/list/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:04:35 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "280"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": [\n        {\n            \"id\": 1,\n            \"title\": \"Sample Note Title\",\n            \"content\": \"This is the content of the sample note.\",\n            \"user_id\": 1,\n            \"category_id\": 1\n        },\n        {\n            \"id\": 2,\n            \"title\": \"Sample Note Title\",\n            \"content\": \"This is the content of the sample note.\",\n            \"user_id\": 1,\n            \"category_id\": 1\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get-Note-By-Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/notes/get/1/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"get",
+								"1",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get-Notes-By-Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/notes/get/1/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"get",
+										"1",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:05:50 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "151"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Sample Note Title\",\n        \"content\": \"This is the content of the sample note.\",\n        \"user_id\": 1,\n        \"category_id\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update-Note",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Sample Note Title kapil\",\n    \"content\": \"This is the content of the sample note kapil.\",\n    \"user_id\": 1,\n    \"category_id\": 1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/notes/put/2/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"put",
+								"2",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update-Note",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Sample Note Title kapil\",\n    \"content\": \"This is the content of the sample note kapil.\",\n    \"user_id\": 1,\n    \"category_id\": 1\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/notes/put/2/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"put",
+										"2",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:07:33 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "163"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"id\": 2,\n        \"title\": \"Sample Note Title kapil\",\n        \"content\": \"This is the content of the sample note kapil.\",\n        \"user_id\": 1,\n        \"category_id\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete-Note",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/notes/delete/2/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"delete",
+								"2",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete-Note",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/notes/delete/2/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"delete",
+										"2",
+										""
+									]
+								}
+							},
+							"status": "NO CONTENT",
+							"code": 204,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:09:09 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Partial-Update-Note",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Sample Note Title kapil\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/notes/patch/1/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"notes",
+								"patch",
+								"1",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Partial-Update-Note",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Sample Note Title kapil\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/notes/patch/1/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"notes",
+										"patch",
+										"1",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:18:34 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "197"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Note Updated Successfully\",\n    \"status\": true,\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Sample Note Title kapil\",\n        \"content\": \"This is the content of the sample note.\",\n        \"user_id\": 1,\n        \"category_id\": 1\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "UserRoutes",
+			"item": [
+				{
+					"name": "Users-List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/users/list/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"list",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Users-List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/users/list/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:24:01 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1054"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"email\": \"johndoe@example.com\",\n            \"id\": 1,\n            \"name\": \"John Doe\",\n            \"password_hash\": \"password_123\",\n            \"username\": \"johndoe\"\n        },\n        {\n            \"email\": \"johndoe2@example.com\",\n            \"id\": 4,\n            \"name\": \"John Doe2\",\n            \"password_hash\": \"password_123\",\n            \"username\": \"johndoe2\"\n        },\n        {\n            \"email\": \"johndoe3@example.com\",\n            \"id\": 7,\n            \"name\": \"John Doe2\",\n            \"password_hash\": \"password_123\",\n            \"username\": \"johndoe3\"\n        },\n        {\n            \"email\": \"johndoe4@example.com\",\n            \"id\": 8,\n            \"name\": \"John Doe4\",\n            \"password_hash\": \"password_1234\",\n            \"username\": \"johndoe4\"\n        },\n        {\n            \"email\": \"johndoe5@example.com\",\n            \"id\": 9,\n            \"name\": \"John Doe\",\n            \"password_hash\": \"password_1234\",\n            \"username\": \"johndoe5\"\n        },\n        {\n            \"email\": \"johndeer@example.com\",\n            \"id\": 10,\n            \"name\": \"John Deer\",\n            \"password_hash\": \"password_1234\",\n            \"username\": \"johndeer\"\n        }\n    ],\n    \"message\": \"Users retrieved successfully\",\n    \"status\": true\n}"
+						}
+					]
+				},
+				{
+					"name": "Get-User-By-Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/users/get/10/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"get",
+								"10",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get-User-By-Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/users/get/10/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"get",
+										"10",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:25:17 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "223"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"email\": \"johndeer@example.com\",\n        \"id\": 10,\n        \"name\": \"John Deer\",\n        \"password_hash\": \"password_1234\",\n        \"username\": \"johndeer\"\n    },\n    \"message\": \"User retrieved successfully\",\n    \"status\": true\n}"
+						}
+					]
+				},
+				{
+					"name": "Create-User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test user\",\n    \"username\": \"testuser\",\n    \"email\": \"testuser@example.com\",\n    \"password_hash\": \"test@123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/users/post/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"post",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create-User",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"test user\",\n    \"username\": \"testuser\",\n    \"email\": \"testuser@example.com\",\n    \"password_hash\": \"test@123\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/users/post/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"post",
+										""
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:28:05 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "183"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User Created Successfully\",\n    \"status\": true,\n    \"data\": {\n        \"id\": 11,\n        \"name\": \"test user\",\n        \"username\": \"testuser\",\n        \"email\": \"testuser@example.com\",\n        \"password_hash\": \"test@123\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "User-Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John test\",\n    \"username\": \"johntest\",\n    \"email\": \"johntest@example.com\",\n    \"password_hash\": \"hashed_password\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/users/put/11/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"put",
+								"11",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "User-Update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John test\",\n    \"username\": \"johntest\",\n    \"email\": \"johntest@example.com\",\n    \"password_hash\": \"hashed_password\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/users/put/11/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"put",
+										"11",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:29:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "190"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"id\": 11,\n        \"name\": \"John test\",\n        \"username\": \"johntest\",\n        \"email\": \"johntest@example.com\",\n        \"password_hash\": \"hashed_password\"\n    },\n    \"message\": \"User updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Partial-Update-User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password_hash\": \"password123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/users/patch/11/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"patch",
+								"11",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Partial-Update-User",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password_hash\": \"password123\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/users/patch/11/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"patch",
+										"11",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:31:29 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "186"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"id\": 11,\n        \"name\": \"John test\",\n        \"username\": \"johntest\",\n        \"email\": \"johntest@example.com\",\n        \"password_hash\": \"password123\"\n    },\n    \"message\": \"User updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete-User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/users/delete/11/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"users",
+								"delete",
+								"11",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete-User",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/users/delete/11/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"users",
+										"delete",
+										"11",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:32:35 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"message\": \"User deleted successfully\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CategoryRoutes",
+			"item": [
+				{
+					"name": "Category-List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/categories/list/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"categories",
+								"list",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Category-List",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/categories/list/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"categories",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:35:40 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "442"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": [\n        {\n            \"name\": \"John Doe2\",\n            \"id\": 1\n        },\n        {\n            \"name\": \"content\",\n            \"id\": 2\n        },\n        {\n            \"name\": \"summary\",\n            \"id\": 3\n        },\n        {\n            \"name\": \"notes\",\n            \"id\": 4\n        },\n        {\n            \"name\": \"dummy\",\n            \"id\": 5\n        },\n        {\n            \"name\": \"dummy2\",\n            \"id\": 17\n        },\n        {\n            \"name\": \"dummy3\",\n            \"id\": 18\n        },\n        {\n            \"name\": \"dummy4\",\n            \"id\": 19\n        },\n        {\n            \"name\": \"dummy5\",\n            \"id\": 25\n        },\n        {\n            \"name\": \"dummy6\",\n            \"id\": 26\n        },\n        {\n            \"name\": \"dummy7\",\n            \"id\": 27\n        },\n        {\n            \"name\": \"dummy8\",\n            \"id\": 28\n        },\n        {\n            \"name\": \"dummy9\",\n            \"id\": 29\n        },\n        {\n            \"name\": \"baba\",\n            \"id\": 31\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Update-Category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/categories/put/31/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"categories",
+								"put",
+								"31",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update-Category",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/categories/put/31/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"categories",
+										"put",
+										"31",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:38:08 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "52"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"name\": \"test\",\n        \"id\": 31\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get-Category-By-Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/categories/get/31/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"categories",
+								"get",
+								"31",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get-Category-By-Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/categories/get/31/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"categories",
+										"get",
+										"31",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:36:46 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "52"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": true,\n    \"data\": {\n        \"name\": \"baba\",\n        \"id\": 31\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete-Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{flask_local_env}}/categories/delete/31/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"categories",
+								"delete",
+								"31",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete-Category",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{flask_local_env}}/categories/delete/31/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"categories",
+										"delete",
+										"31",
+										""
+									]
+								}
+							},
+							"status": "NO CONTENT",
+							"code": 204,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:39:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html; charset=utf-8"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Create-category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"test-category\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{flask_local_env}}/categories/post/",
+							"host": [
+								"{{flask_local_env}}"
+							],
+							"path": [
+								"categories",
+								"post",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create-category",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"test-category\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{flask_local_env}}/categories/post/",
+									"host": [
+										"{{flask_local_env}}"
+									],
+									"path": [
+										"categories",
+										"post",
+										""
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.3 Python/3.8.10"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 12 Jul 2024 06:41:30 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "105"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Category Created Successfully\",\n    \"status\": true,\n    \"data\": {\n        \"name\": \"test-category\",\n        \"id\": 32\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
