@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api
 from app import app
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, Config, request, jsonify
 from flask_bcrypt import Bcrypt 
 from app.models.user import User
 import re
@@ -63,7 +63,7 @@ class LoginView(Resource):
         def post(self):
             data = request.get_json()
             username = data['username']
-            password = data['password_hash']
+            password = data['password']
             print('Received data:', username , password)
 
             user = User.query.filter_by(username=username).first()

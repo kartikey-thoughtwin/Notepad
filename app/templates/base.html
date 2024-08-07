@@ -70,6 +70,98 @@
             padding: 20px;
             margin-top: 20px;
         }
+
+        .side-nav{
+            position: relative;
+            top: 0;
+            left: 0;
+
+            &-list{
+                position: relative;
+                left: -100%;
+                top: 0;
+                width: 250px;
+                height: 100vh;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                background-color: #010101;
+                padding: 100px 15px 0;
+                transition: all 0.4s linear;
+            }
+
+            &-item{
+                display: block;
+                margin: 15px 0;
+                padding: 0;
+                text-align: center;
+            }
+
+            &-link{
+                display: inline-block;
+                text-decoration: none;
+                color: #fff;
+            }
+
+            .hamburger{
+                @include flex(center,center);
+                width: 38px;
+                height: 33px;
+                border: 1px solid #a5a5a5;
+                border-radius: 5px;
+                position: absolute;
+                top: 20px;
+                left: 20px; 
+                z-index: 99999999;
+                
+                .bar{
+                display: inline-block;
+                width: 28px;
+                height: 3px;
+                background-color: #949494;
+                position: relative;
+            
+                &:after,
+                &:before {
+                    content: '';
+                    position: absolute;
+                    width: 28px;
+                    height: 3px;
+                    background-color: #949494;
+                    top: -8px;
+                    transition: all 0.4s linear;
+                }
+            
+                &:after{
+                    top: 8px;
+                }
+                }
+
+                &.close{
+
+                    .bar{
+                        height: 0;
+
+                        &:after{
+                            top: -2px;
+                            background-color: #fff;
+                            transform: rotate(135deg);
+                        }
+
+                        &:before{
+                            top: -2px;
+                            background-color: #fff;
+                            transform: rotate(45deg);
+                        }
+                    }
+                }
+                
+            }
+        }
+
+            .slide-in{
+                left: 0;
+            }
     </style>
 </head>
 
@@ -95,14 +187,14 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-4">
-                <h5>Notes</h5>
+                <h5>All Notes</h5>
                 <div class="note-list">
                     {% for note in context.notes %}
                     <div class="note-item">
                         <div class="note-title">{{note.title}}</div>
-                        <div class="note-content">{{note.content}}</div>
+                        <div class="note-content">{{note.content | safe }}</div>
                         <div class="note-actions">
-                            <a href="#" class="edit-note" data-id={{note.id}}><i class="fas fa-pencil-alt"></i></a>
+                            <a href="#" class="edit-note" data-id="{{note.id}}"><i class="fas fa-pencil-alt"></i></a>
                             <a href="#" class="delete-note" data-id="{{note.id}}"><i class="fas fa-trash"></i></a>
                         </div>
                     </div>
@@ -114,34 +206,42 @@
                     <h5>New Note</h5>
                     <form id="createNoteForm">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="title" placeholder="Note Title" >
+                            <input type="text" class="form-control" name="title" placeholder="Note Title">
                         </div>
                         <div class="form-group">
-                            <select class="form-control" id="noteCategory" name="noteCategory" >
-                            <option value="" disabled selected>---  Select Category  ---</option>
-                            {% for category in context.categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                            {% endfor %}
+                            <select class="form-control" id="noteCategory" name="noteCategory">
+                                <option value="" disabled selected>---  Select Category  ---</option>
+                                {% for category in context.categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" name="content" rows="8" placeholder="Note Content" ></textarea>
+                            <textarea class="form-control" id="noteContent" name="content" rows="8" placeholder="Note Content"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Note</button>
                     </form>
-                    </form>
+
                 </div>
             </div>
         </div>
     </div>
 
+
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-    
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        CKEDITOR.replace('noteContent', {
+            removePlugins: 'securityinfo'
+        });
         var categories = {{ context.categories | tojson | safe }};
     </script>
 

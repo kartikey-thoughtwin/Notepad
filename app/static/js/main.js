@@ -8,15 +8,51 @@ function ajaxCall(url, method, data, successCallback, errorCallback) {
         error: errorCallback
     });
 }
+////////////////////////////////////////////////////////////////////////////////////
+// console.clear();
+
+// const nav = document.getElementById('side-nav');
+// const showNavBtn = document.getElementById('show-nav');
+// const container = document.getElementById('container');
+// const navWidth = 15; // rems
+// const navGutter = 1;
+
+// nav.addEventListener('click', (event) => {
+// 	if(event.target.classList.contains('sub-menu-link')){
+//     event.target.classList.toggle('active');
+//   	const subMenu = event.target.nextElementSibling;
+//     subMenu.classList.toggle('active');
+//   }
+// });
+
+// showNavBtn.addEventListener('click', (event) => {
+//   if (nav.style.left !== '0px') {
+//     showNavBtn.classList.toggle('open');
+//     nav.classList.toggle('open');
+//   	// container.classList.toggle('nav-open');
+//     document.body.style.overflow = 'hidden';
+//   } else {
+//     showNavBtn.classList.toggle('open');
+//     nav.classList.toggle('open');
+//   	container.classList.toggle('nav-open');
+//     document.body.style.overflow = 'auto';
+//   }
+// }, nav);
+
+////////////////////////////////////////////////////////////////////////////////////
+
 
 function updateRecords() {
     ajaxCall('/notes/list/', 'GET', null, function(data) {
         var notesHtml = data.data.map(note => `
             <div class="note-item">
-                <div class="note-title">${note.title}</div>
-                <div class="note-content">${note.content}</div>
+                <div class="note-header">
+                    <div class="note-title">${note.title}</div>
+                    <a href="#" class="edit-note" data-id="${note.id}"><i class="fas fa-eye"></i></a> <!-- Eye button -->
+                </div>
+                <!-- <div class="note-content">${note.content}</div> -->
                 <div class="note-actions">
-                    <a href="#" class="edit-note" data-id="${note.id}"><i class="fas fa-pencil-alt"></i></a>
+                    <!-- <a href="#" class="edit-note" data-id="${note.id}"><i class="fas fa-pencil-alt"></i></a> -->
                     <a href="#" class="delete-note" data-id="${note.id}"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
@@ -29,122 +65,125 @@ function updateRecords() {
 
 $(document).ready(function () {
 
-    // Handle edit note click event
-    $(document).on('click', '.edit-note', function() {
-        var noteId = $(this).attr('data-id');
-    
-        // Load the edit note modal HTML from the static directory
-        $.get('/static/html/editNoteModal.html', function (modalHtml) {
-            // Append the modal HTML to the body
-            $('body').append(modalHtml);
-    
-            // Get the note data via AJAX
-            ajaxCall('/notes/get/' + noteId, 'GET', null, function (data) {
-                // Populate the modal with the retrieved data
-                $('#editNoteModal').find('input[name="title"]').val(data.data.title);
-                $('#editNoteModal').find('textarea[name="content"]').val(data.data.content);
-                $('#updateNoteForm').attr('data-note-id', noteId);
-    
-                // Populate the categories dropdown
-                var categoriesHtml = categories.map(category => `
-                    <option value="${category.id}" ${data.data.category_id == category.id ? 'selected' : ''}>${category.name}</option>
-                `).join('');
-    
-                $('#editNoteModal').find('select[name="noteCategory"]').html(categoriesHtml);
-    
-                // Open the modal
-                $('#editNoteModal').modal('show');
-    
-                // Remove the modal from the DOM after it is closed
-                $('#editNoteModal').on('hidden.bs.modal', function () {
-                    $(this).remove();
-                });
-    
-                // Handle the update note form submission
-                $('#updateNoteForm').off('submit').on('submit', function(event) {
-                    event.preventDefault(); // Prevent the default form submission
-    
-                    // Get the note ID from the form's data attribute
-                    var noteId = $(this).data('note-id');
-    
-                    // Get the form data    
-                    var formData = {
-                        title: $('#editNoteModal input[name="title"]').val(),
-                        category_id: $('#editNoteModal select[name="noteCategory"]').val(),
-                        content: $('#editNoteModal textarea[name="content"]').val(),
-                        user_id: 1 // Assuming user_id is fixed for now
-                    };
+// Handle edit note click event
+$(document).on('click', '.edit-note', function() {
+    var noteId = $(this).attr('data-id');
 
-                    // Check for empty fields and show custom error for each field
-                    if (!formData.title) {
-                        toastr.error('Title field cannot be empty');
-                        return;
-                    }
-                    if (!formData.category_id) {
-                        toastr.error('Category field cannot be empty');
-                        return;
-                    }
-                    if (!formData.content) {
-                        toastr.error('Content field cannot be empty');
-                        return;
-                    }
-    
-                    // Send the PUT request using AJAX
-                    ajaxCall(`/notes/put/${noteId}`, 'PUT', formData, function(response) {
-                        // Close the modal
-                        $('#editNoteModal').modal('hide');
-    
-                        // Show success toast
-                        toastr.success('Note updated successfully');
-    
-                        // Update the specific note item in the list
-                        updateRecords();
-                    }, function(xhr, status, error) {
-                        toastr.error('Update error: ' + error);
-                    });
-                });
-            }, function (error) {
-                toastr.error('Error retrieving note: ' + error);
+    // Load the edit note modal HTML from the static directory
+    $.get('/static/html/editNoteModal.html', function (modalHtml) {
+        // Append the modal HTML to the body
+        $('body').append(modalHtml);
+
+        // Get the note data via AJAX
+        ajaxCall('/notes/get/' + noteId, 'GET', null, function (data) {
+            // Populate the modal with the retrieved data
+            $('#editNoteModal').find('input[name="title"]').val(data.data.title);
+            $('#editNoteModal').find('textarea[name="content"]').val(data.data.content);
+            $('#updateNoteForm').attr('data-note-id', noteId);
+
+            // Initialize CKEditor on the textarea
+            CKEDITOR.replace('editNoteContent');
+
+            // Set the content of CKEditor with formatted HTML
+            CKEDITOR.instances['editNoteContent'].setData(data.data.content);
+
+            // Populate the categories dropdown
+            var categoriesHtml = categories.map(category => `
+                <option value="${category.id}" ${data.data.category_id == category.id ? 'selected' : ''}>${category.name}</option>
+            `).join('');
+
+            $('#editNoteModal').find('select[name="noteCategory"]').html(categoriesHtml);
+
+            // Open the modal
+            $('#editNoteModal').modal('show');
+
+            // Remove the modal from the DOM after it is closed
+            $('#editNoteModal').on('hidden.bs.modal', function () {
+                $(this).remove();
             });
+
+            // Handle the update note form submission
+            $('#updateNoteForm').off('submit').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get the note ID from the form's data attribute
+                var noteId = $(this).data('note-id');
+
+                // Get the form data
+                var formData = {
+                    title: $('#editNoteModal input[name="title"]').val(),
+                    category_id: $('#editNoteModal select[name="noteCategory"]').val(),
+                    content: CKEDITOR.instances['editNoteContent'].getData(),
+                    user_id: 1 // Assuming user_id is fixed for now
+                };
+
+                // Check for empty fields and show custom error for each field
+                if (!formData.title) {
+                    toastr.error('Title field cannot be empty');
+                    return;
+                }
+                if (!formData.category_id) {
+                    toastr.error('Category field cannot be empty');
+                    return;
+                }
+                if (!formData.content) {
+                    toastr.error('Content field cannot be empty');
+                    return;
+                }
+
+                // Send the PUT request using AJAX
+                ajaxCall(`/notes/put/${noteId}`, 'PUT', formData, function(response) {
+                    // Close the modal
+                    $('#editNoteModal').modal('hide');
+
+                    // Show success toast
+                    toastr.success('Note updated successfully');
+
+                    // Update the specific note item in the list
+                    // updateRecords();
+                    window.location.reload()
+                }, function(xhr, status, error) {
+                    toastr.error('Update error: ' + error);
+                });
+            });
+        }, function (error) {
+            toastr.error('Error retrieving note: ' + error);
         });
     });
+});
 
     // Handle delete note click event
     $(document).on('click', '.delete-note', function (e) {
         e.preventDefault();
         var noteId = $(this).attr('data-id');
-    
-        // Load the confirmation modal HTML
-        $.get('/static/html/confirmationModal.html', function (data) {
-            $('body').append(data);
-    
-            // Set the note ID to the confirm button
-            $('#confirmDelete').data('id', noteId);
-    
-            // Close modal on clicking No or cross button
-            $('#cancelDelete, #closeModal').click(function () {
-                $('#confirmationModal').remove();
-            });
-    
-            // Confirm delete
-            $('#confirmDelete').click(function () {
-                var noteId = $(this).data('id'); // Get the note ID from the data attribute
-    
+
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            showCancelButton: true,
+            confirmButtonText: "Delete"
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+
                 ajaxCall(`/notes/delete/${noteId}`, 'DELETE', {}, function() {
-                    // Close the modal
-                    $('#confirmationModal').remove();
-    
+
                     // Show success toast
-                    toastr.success('Note deleted successfully');
-    
+                    Swal.fire("Deleted!", "", "success");
+
                     // Refresh the records list
-                    updateRecords();
+                    // updateRecords();
+                    window.location.reload()
                 }, function(error) {
-                    toastr.error('Error deleting note: ' + error);
+                    Swal.fire("Error deleting Note!", "", "failure");
                 });
-            });
-        });
-    });
+
+              
+            } else if (result.isDenied) {
+              Swal.fire("Changes are not saved", "", "info");
+            }
+          });
+    
+        });         
 
     // Handle the create note form submission
     $(document).on('submit', '#createNoteForm', function(event) {
@@ -179,8 +218,12 @@ $(document).ready(function () {
             // Clear the form
             $('#createNoteForm')[0].reset();
 
+            // Clear the TinyMCE content
+            CKEDITOR.instances['noteContent'].setData('');
+
             // Fetch and render updated records
-            updateRecords();
+            // updateRecords();
+            window.location.reload()
         }, function(error) {
             toastr.error('Error creating note: ' + error);
         });

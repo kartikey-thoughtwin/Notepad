@@ -19,7 +19,7 @@ def home():
             "notes": [note.to_dict() for note in notes],
             "categories": [category.to_dict() for category in categories],
         }
-        return render_template("base.html", context=context)
+        return render_template("imports/index.html", context=context)
     except SQLAlchemyError as e:
         return render_template("base.html", error=str(e))
 
