@@ -10,7 +10,9 @@ def validate_data(data):
     elif data.get("name") == "":
         return {"status": False, "message": "Enter the name."}
     else:
-         return {"status": True, "data": data}
+        return {"status": True, "data": data}
+
+
 
 
 def validate_note_data(data):

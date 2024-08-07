@@ -37,7 +37,10 @@ class NotesAPI(Resource):
             user_id=note_data.user_id,
             category_id=note_data.category_id,
         )
+<<<<<<< HEAD
         
+=======
+>>>>>>> 36aa4e6a1086f289b356f745c6c1557ca0286e46
         db.session.add(new_note)
         db.session.commit()
         return jsonify(NoteSchema.from_orm(new_note).dict()), 201

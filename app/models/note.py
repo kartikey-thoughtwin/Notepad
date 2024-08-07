@@ -26,3 +26,4 @@ class Note(db.Model):
             'created_at': str(self.created_at)
         }
 
+

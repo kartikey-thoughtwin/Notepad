@@ -2,6 +2,8 @@ from curses import meta
 from datetime import date, datetime
 from flask_restx import Resource
 from flask import request, Blueprint, Response, render_template, session
+from flask_restx import Resource
+from flask import request, Blueprint, Response, render_template
 from app import api, db
 from app.models import Note, Category
 from sqlalchemy.exc import SQLAlchemyError
@@ -10,6 +12,7 @@ import json
 from app.utils.utils import validate_note_data, make_response
 from sqlalchemy import func
 from sqlalchemy import and_
+
 
 note_bp = Blueprint("notes", __name__)
 
@@ -29,6 +32,7 @@ def home():
 
 
 class NotesAPI(Resource):
+
 
     # remove pydentic schema validation instead user custom validations 
     # also make sure optimise retrival of the paylaod data using .get() method 
@@ -92,9 +96,13 @@ class NotesAPI(Resource):
                 category_id=data["category_id"],
             )
 
+
             db.session.add(new_note)
             db.session.commit()
 
+
+            db.session.add(new_note)
+            db.session.commit()
             return make_response(
                 True,
                 message="Note Created Successfully",
@@ -203,6 +211,7 @@ class NotesAPI(Resource):
             return make_response(False, message=str(e), status_code=500)
 
 
+
 class FilterNotesAPI(Resource):
     """
         GET method to retrieve notes based on filters.
@@ -303,3 +312,9 @@ api.add_resource(FilterNotesAPI, "/notes/filter/", methods=["GET"])
 
 
 
+api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
+api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
+api.add_resource(NotesAPI, "/notes/post/", methods=["POST"])
+api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
+api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
+api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
