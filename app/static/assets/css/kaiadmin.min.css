@@ -10764,22 +10764,6 @@ body[data-background-color=dark] .jvm-zoom-btn {
  color: #b40101d0; /* Darker color on hover */
 }
 
-a.delete-note{
-   width: 50px;
-}
-/* 
-.note-item {
-   margin-right: 5px;
-   margin-left: 5px;
-   background-color: #2a2f5b;
-   border: 1px solid #e0e0e0;
-   border-radius: 8px;
-   margin-bottom: 10px;
-   padding: 6px;
-   transition: box-shadow 0.3s ease;
-   position: relative;
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-} */
 
 
 .note-item {
@@ -10818,4 +10802,3 @@ a.delete-note{
    text-align: center; /* Center align the icon inside the anchor tag */
 }
 
-/* #2a2f5b */
