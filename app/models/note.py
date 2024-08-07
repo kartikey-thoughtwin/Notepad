@@ -14,8 +14,7 @@ class Note(db.Model):
 
     def __repr__(self):
         return f'<Note {self.title}>'
-<<<<<<< Updated upstream
-=======
+
 
     def to_dict(self):
         return {
@@ -26,6 +25,4 @@ class Note(db.Model):
             'category_id': self.category_id,
             'created_at': str(self.created_at)
         }
-    
-  
->>>>>>> Stashed changes
+
