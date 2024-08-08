@@ -4,11 +4,13 @@ from app import app, db
 from flask_bcrypt import Bcrypt
 from app.models.user import User
 import re
+from flask import request, Blueprint, Response, render_template
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies,
     jwt_required, get_jwt_identity, get_jwt,unset_jwt_cookies
 )
 from datetime import datetime, timezone
+from flask_jwt_extended.exceptions import NoAuthorizationError, JWTDecodeError, RevokedTokenError
 import json
 
 user_bp = Blueprint('users', __name__)
@@ -19,7 +21,16 @@ jwt = JWTManager(app)
 # A set to store revoked tokens (for demonstration purposes; use a more persistent storage in production)
 revoked_tokens = set()
 
+@user_bp.route("/register", methods=['GET','POST'])
+def create():
+    if request.method=='GET':
+        return render_template("registration.html")
+    if request.method == 'POST':
+        obj = RegisterView()
+        return obj.post()
+
 def validate_user_data(data):
+    # breakpoint()
     email = data.get("email")
     username = data.get("username", None)
     name = data.get("name", None)
@@ -30,20 +41,24 @@ def validate_user_data(data):
 
     if User.query.filter_by(username=username).first():
         return {'Error': 'Username already exists.'}
-
+    
+    if email == '':
+        return {'Error': 'Please enter Email'}
+    
+    if password == '':
+        return {'Error': 'Please enter Password'}
+    
+    if username == '':
+        return {'Error': 'Please enter Username'}
+    
     if len(str(username)) <= 4 or str(username).strip() == "" or username is None or username != str(username):
         return {'Error': 'Username must contain at least 5 characters'}
     
     if User.query.filter_by(email=email).first():
         return {'Error': 'Email already present'}
-
+    
     if email is None:
         return {'Error': 'Please enter your email'}
-
-    regex = re.compile(
-        r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-    if not re.fullmatch(regex, email):
-        return {'Error': 'Please enter a valid email'}
 
     if password is None or len(password) < 8:
         return {'Error': 'Password must be at least 8 characters long'}
@@ -56,8 +71,7 @@ class RegisterView(Resource):
             data = request.get_json()
             validation_error = validate_user_data(data)
             if validation_error:
-                return jsonify(validation_error)
-
+                return Response(json.dumps({'error': validation_error}), status=400, content_type="application/json")
             user = User(
                 name=data['name'],
                 username=data['username'],
@@ -74,7 +88,7 @@ class RegisterView(Resource):
             return jsonify({'message': 'User created', 'access_token': access_token, 'refresh_token': refresh_token})
 
         except Exception as e:
-            return jsonify({'message': 'An error occurred', 'error': str(e)})
+            return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
 
 class LoginView(Resource):
     def post(self):
@@ -93,11 +107,11 @@ class LoginView(Resource):
                 set_refresh_cookies(response, refresh_token)
                 return response
             else:
-                return jsonify({'message': 'Login failed'}), 401
+                return jsonify({'message': 'Login failed'})
 
         except Exception as e:
             print(e)
-            return jsonify({'message': f'Missing field: {str(e)}'}), 400
+            return jsonify({'message': f'Missing field: {str(e)}'})
         
         
 class TokenRefreshView(Resource):
@@ -110,7 +124,7 @@ class TokenRefreshView(Resource):
             access_token = create_access_token(identity=current_user)
             response = jsonify({'message': 'Token refreshed'})
             set_access_cookies(response, access_token)
-            return response, 200
+            return response
 
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
@@ -133,12 +147,18 @@ class LogoutView(Resource):
         except Exception as e:
             return jsonify({'message': 'An error occurred', 'error': str(e)})
             
+@app.errorhandler(NoAuthorizationError)
+def handle_no_auth_error(e):
+    return jsonify({'message': 'Token is missing'}), 401
 
 class HomeView(Resource):
     @jwt_required()
     def post(self):
-        return Response(json.dumps({'message':'Home View'}), status=200, content_type="application/json")
-
+        current_user = get_jwt_identity()
+        if current_user:
+            return Response(json.dumps({'message': 'Home View'}), status=200, content_type="application/json")
+        else:
+            return Response(json.dumps({'message': 'user not found'}), status=404, content_type="application/json")
 
 
 # Revocation checking function

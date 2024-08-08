@@ -7,6 +7,7 @@ from flask_restx import Api
 
 # Initialize Flask app
 app = Flask(__name__)
+# CORS(app)
 app.config.from_object(Config)
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
