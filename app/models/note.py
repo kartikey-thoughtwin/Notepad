@@ -15,11 +15,15 @@ class Note(db.Model):
     def __repr__(self):
         return f'<Note {self.title}>'
 
+
     def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
             'content': self.content,
             'user_id': self.user_id,
-            'category_id': self.category_id
+            'category_id': self.category_id,
+            'created_at': str(self.created_at)
         }
+
+

@@ -13,6 +13,8 @@ def validate_data(data):
         return {"status": True, "data": data}
 
 
+
+
 def validate_note_data(data):
     if not data:
         return {"status": False, "message": "Enter JSON data"}
@@ -22,8 +24,8 @@ def validate_note_data(data):
         return {"status": False, "message": "Enter the title."}
     elif "content" not in data or data.get("content") == "":
         return {"status": False, "message": "Enter the content."}
-    elif "user_id" not in data or data.get("user_id") == "":
-        return {"status": False, "message": "Enter the user_id."}
+    # elif "user_id" not in data or data.get("user_id") == "":
+    #     return {"status": False, "message": "Enter the user_id."}
     elif "category_id" not in data or data.get("category_id") == "":
         return {"status": False, "message": "Enter the category_id."}
     else:
