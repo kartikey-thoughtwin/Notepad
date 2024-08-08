@@ -16,6 +16,13 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Include your custom script -->
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+    <style>
+        .wrong-entry .alert {
+            display: block;
+        }
+    </style>
+    
 </head>
 <body>
     <div class="panda">
@@ -45,14 +52,15 @@
         <div class="hand rgt"></div>
         <h1>Login</h1>
         <div class="form-group">
-          <input required="required" class="form-control"/>
+          <input id="username" required="required" class="form-control"/>
           <label class="form-label">Username    </label>
         </div>
         <div class="form-group">
           <input id="password" type="password" required="required" class="form-control"/>
           <label class="form-label">Password</label>
-          <p class="alert">Invalid Credentials..!!</p>
-          <button class="btn">Login </button>
+          <!-- <p class="alert">Invalid Credentials..!!</p> -->
+          <p class="alert" style="display: none;">Invalid Credentials..!!</p>
+          <button id="login-btn" class="btn">Login </button>
         </div>
     </form>
     <a href="#">Sign up</a>

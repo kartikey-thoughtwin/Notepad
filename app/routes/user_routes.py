@@ -1,3 +1,4 @@
+from flask import Blueprint, request, jsonify, Response, make_response
 from flask_restful import Resource, Api
 from app import app, db
 from flask import Blueprint, render_template, request, jsonify, Response
@@ -9,8 +10,8 @@ from app.models.user import User
 import re
 from flask import request, Blueprint, Response, render_template
 from flask_jwt_extended import (
-    JWTManager, create_access_token, create_refresh_token,
-    jwt_required, get_jwt_identity, get_jwt
+    JWTManager, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies,
+    jwt_required, get_jwt_identity, get_jwt,unset_jwt_cookies
 )
 from datetime import datetime, timezone
 from flask_jwt_extended.exceptions import NoAuthorizationError, JWTDecodeError, RevokedTokenError
@@ -107,24 +108,30 @@ class LoginView(Resource):
             if user and bcrypt.check_password_hash(user.password_hash, password):
                 access_token = create_access_token(identity=user.id)
                 refresh_token = create_refresh_token(identity=user.id)
-                return Response(json.dumps({'message': 'Login Success', 'access_token': access_token, 'refresh_token': refresh_token}), status=200, content_type="application/json")
-            else:
-                return Response(json.dumps({'message': 'Login failed'}), status=200, content_type="application/json")
 
-        except KeyError as e:
-            return Response(json.dumps({'message': f'Missing field: {str(e)}'}), status=400, content_type="application/json")
+                response = jsonify({'message': 'Login Success'})
+                set_access_cookies(response, access_token)
+                set_refresh_cookies(response, refresh_token)
+                return response
+            else:
+                return jsonify({'message': 'Login failed'}), 401
+
         except Exception as e:
-            return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
+            print(e)
+            return jsonify({'message': f'Missing field: {str(e)}'}), 400
+        
         
 class TokenRefreshView(Resource):
     @jwt_required(refresh=True)
     def post(self):
         try:
             '''By this post method passing a refresh token,
-               User will get new acess token'''
+               User will get new access token'''
             current_user = get_jwt_identity()
             access_token = create_access_token(identity=current_user)
-            return Response(json.dumps({'message': 'Login Success', 'access_token': access_token}), status=200, content_type="application/json")
+            response = jsonify({'message': 'Token refreshed'})
+            set_access_cookies(response, access_token)
+            return response, 200
 
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
@@ -134,9 +141,15 @@ class LogoutView(Resource):
     @jwt_required()
     def post(self):
         try:
+            print("HERERE")
             jti = get_jwt()["jti"]
             revoked_tokens.add(jti)
-            return Response(json.dumps({"message": "Successfully logged out"}), status=200, content_type="application/json")
+            
+            response = jsonify({"message": "Successfully logged out"})
+            response.delete_cookie('access_token_cookie')
+            response.delete_cookie('refresh_token_cookie')
+            
+            return response
             
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")

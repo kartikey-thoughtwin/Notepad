@@ -36,7 +36,7 @@ $(document).ready(function () {
         var noteId = $(this).attr('data-id');
 
         // Get the note data via AJAX
-        ajaxCall('/notes/get/' + noteId, 'GET', null, function (data) {
+        ajaxCall('/notes/get/' + noteId + '/', 'GET', null, function (data) {
             // Populate the form with the retrieved data
             $('input[name="title"]').val(data.data.title);
             $('#noteContent').val(data.data.content);
@@ -66,7 +66,7 @@ $(document).ready(function () {
                             title: $('input[name="title"]').val(),
                             category_id: $('#noteCategory').val(),
                             content: CKEDITOR.instances['noteContent'].getData(),
-                            user_id: 1 // Assuming user_id is fixed for now
+                            // user_id: 2 // Assuming user_id is fixed for now
                         };
 
                         // Check for empty fields and show custom error for each field
@@ -154,7 +154,7 @@ $(document).ready(function () {
 
         // Get the form data
         var formData = {
-            user_id: 1,
+            // user_id: 2,
             title: $('input[placeholder="Note Title"]').val(),
             category_id: $('#noteCategory').val(),
             content: $('textarea[placeholder="Note Content"]').val()
@@ -191,5 +191,39 @@ $(document).ready(function () {
             toastr.error('Error creating note: ' + error);
         });
     });
+
+
+    // ******************************** JS For Logout ******************************** //
+
+    function getCsrfToken() {
+        return $('meta[name="csrf-token"]').attr('content');
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name + '=; Max-Age=-99999999;';
+    }
+    
+    $('#logout-btn').click(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '/logout',
+            success: function(response) {
+                console.log("Logged out successfully");
+                eraseCookie('access_token_cookie');
+                eraseCookie('refresh_token_cookie');
+                window.location.href = '/login';
+                // Clear the form after redirecting to login
+                $('#username').val('');
+                $('#password').val('');
+            },
+            error: function(xhr, status, error) {
+                console.log("Error logging out: ", error);
+            }
+        });
+    });
+
+    // ******************************** JS For Logout ******************************** //
+
 
 });
