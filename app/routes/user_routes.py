@@ -13,6 +13,7 @@ from flask_jwt_extended import (
     jwt_required, get_jwt_identity, get_jwt
 )
 from datetime import datetime, timezone
+from flask_jwt_extended.exceptions import NoAuthorizationError, JWTDecodeError, RevokedTokenError
 import json
 
 user_bp = Blueprint('users', __name__)
@@ -93,7 +94,7 @@ class LoginView(Resource):
         try:
             data = request.get_json()
             username = data['username']
-            password = data['password_hash']
+            # password = data['password_hash']
             password = data['password']
             print('Received data:', username , password)
             user = User.query.filter_by(username=username).first()
@@ -133,13 +134,20 @@ class LogoutView(Resource):
             
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
-            
+
+@app.errorhandler(NoAuthorizationError)
+def handle_no_auth_error(e):
+    return jsonify({'message': 'Token is missing'}), 401
+
 
 class HomeView(Resource):
     @jwt_required()
     def post(self):
-        return Response(json.dumps({'message':'Home View'}), status=200, content_type="application/json")
-
+        current_user = get_jwt_identity()
+        if current_user:
+            return Response(json.dumps({'message': 'Home View'}), status=200, content_type="application/json")
+        else:
+            return Response(json.dumps({'message': 'user not found'}), status=404, content_type="application/json")
 
 
 # Revocation checking function
