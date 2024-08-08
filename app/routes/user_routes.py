@@ -1,9 +1,13 @@
 from flask_restful import Resource, Api
 from app import app, db
-from flask import Blueprint, request, jsonify, Response
+from flask import Blueprint, render_template, request, jsonify, Response
 from flask_bcrypt import Bcrypt
+from app import app
+from flask import Blueprint, Config, request, jsonify
+from flask_bcrypt import Bcrypt 
 from app.models.user import User
 import re
+from flask import request, Blueprint, Response, render_template
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token,
     jwt_required, get_jwt_identity, get_jwt
@@ -19,7 +23,16 @@ jwt = JWTManager(app)
 # A set to store revoked tokens (for demonstration purposes; use a more persistent storage in production)
 revoked_tokens = set()
 
+@user_bp.route("/register", methods=['GET','POST'])
+def create():
+    if request.method=='GET':
+        return render_template("registration.html")
+    if request.method == 'POST':
+        obj = RegisterView()
+        return obj.post()
+
 def validate_user_data(data):
+    # breakpoint()
     email = data.get("email")
     username = data.get("username", None)
     name = data.get("name", None)
@@ -29,6 +42,7 @@ def validate_user_data(data):
         return {'Error': 'Please enter a valid name'}
 
     if User.query.filter_by(username=username).first():
+        print(User.query.filter_by(username=username).first().__dict__,"ggggggggggggggggggggggggggggggggggggggggg")
         return {'Error': 'Username already exists.'}
 
     if len(str(username)) <= 4 or str(username).strip() == "" or username is None or username != str(username):
@@ -36,14 +50,10 @@ def validate_user_data(data):
     
     if User.query.filter_by(email=email).first():
         return {'Error': 'Email already present'}
+        
 
     if email is None:
         return {'Error': 'Please enter your email'}
-
-    regex = re.compile(
-        r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
-    if not re.fullmatch(regex, email):
-        return {'Error': 'Please enter a valid email'}
 
     if password is None or len(password) < 8:
         return {'Error': 'Password must be at least 8 characters long'}
@@ -53,10 +63,11 @@ def validate_user_data(data):
 class RegisterView(Resource):
     def post(self):
         try:
+            # breakpoint()
             data = request.get_json()
             validation_error = validate_user_data(data)
             if validation_error:
-                return jsonify(validation_error), 400
+                return Response(json.dumps({'error': str(validation_error)}), status=400, content_type="application/json")
 
             user = User(
                 name=data['name'],
@@ -71,10 +82,11 @@ class RegisterView(Resource):
             access_token = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
             
-            return jsonify({'message': 'User created', 'access_token': access_token, 'refresh_token': refresh_token}), 201
+            return Response(json.dumps({'message': 'Created', 'access_token': access_token, 'refresh_token': refresh_token}), status=201, content_type="application/json")
 
         except Exception as e:
-            return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+            return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
+
 
 class LoginView(Resource):
     def post(self):
@@ -82,7 +94,8 @@ class LoginView(Resource):
             data = request.get_json()
             username = data['username']
             password = data['password_hash']
-            # breakpoint()
+            password = data['password']
+            print('Received data:', username , password)
             user = User.query.filter_by(username=username).first()
             if user and bcrypt.check_password_hash(user.password_hash, password):
                 access_token = create_access_token(identity=user.id)

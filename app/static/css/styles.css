@@ -1,0 +1,411 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Header styling */
+header {
+    background-color: grey;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  
+  ::-webkit-scrollbar-button {
+    width: 0px;
+    height: 0px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #e1e1e1;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #666666;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  
+  :root {
+    --nav-width: 15rem;
+    --gutter: 1rem;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ffffff;
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: #000000;
+  }
+  
+  ::-webkit-scrollbar-track:hover {
+    background: #666666;
+  }
+  
+  ::-webkit-scrollbar-track:active {
+    background: #333333;
+  }
+  
+  body,
+  html {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  /* Sidebar styling */
+#side-nav {
+    position: fixed;
+    top: 96px;
+    left: -250px;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
+    transition: left 0.4s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Show sidebar when active */
+#side-nav.open {
+    left: 0;
+}
+
+#side-nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+/* List items */
+#side-nav ul li {
+    display: block;
+    position: relative;
+    padding: var(--gutter);
+    text-transform: uppercase;
+}
+
+#side-nav ul li::after {
+    position: absolute;
+    width: var(--nav-width);
+    height: 100%;
+    content: "";
+    top: 0;
+    left: calc(calc(var(--nav-width) + var(--gutter)) * -1);
+    background-color: #000;
+    opacity: 0.25;
+    color: #9a9a9a;
+    transition: left 0.25s;
+}
+
+#side-nav ul li:hover {
+    cursor: pointer;
+}
+
+#side-nav ul li:hover::after {
+    left: 0;
+}
+
+#side-nav ul li a {
+    text-decoration: none;
+    color: inherit;
+    z-index: 1001; 
+    position: relative;
+}
+
+/** Submenu styling */
+#side-nav ul li.sub-menu-link {
+    text-transform: uppercase !important;
+}
+
+#side-nav ul li.sub-menu-link::before {
+    font-family: 'Material Icons';
+    content: '\E313';
+    height: 20px;
+    width: 20px;
+    display: block;
+    position: absolute;
+    top: 25%;
+    right: 10px;
+}
+
+#side-nav ul li.sub-menu-link:hover::before {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-name: bounce-down;
+    animation-iteration-count: infinite;
+}
+
+#side-nav ul li.sub-menu-link.active::before {
+    transform: rotate(180deg);
+    margin-right: 4px;
+}
+
+#side-nav ul li.sub-menu-link.active:hover::before {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-name: bounce-up;
+    animation-iteration-count: infinite;
+}
+
+#side-nav ul.side-nav-sub-menu {
+    overflow-y: hidden;
+    padding-left: 1rem;
+    max-height: 0;
+    transition: max-height ease 0.25s;
+}
+
+#side-nav ul.side-nav-sub-menu.active {
+    max-height: 25rem;
+    transition: max-height ease 0.5s;
+}
+
+#side-nav ul.side-nav-sub-menu li {
+    text-transform: lowercase;
+    font-size: 85%;
+    letter-spacing: 2px;
+}
+
+#side-nav ul.side-nav-sub-menu li:hover::after {
+    left: -1rem;
+}
+
+/* Styling for the arrow button */
+#side-nav span#show-nav {
+    position: fixed;
+    top: 46px;
+    left: 0px;
+    height: 50px;
+    width: 50px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 1050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Arrow hover effect */
+#side-nav span#show-nav:hover {
+    background-color: rgba(0, 0, 0, 1); /* Darker background on hover */
+}
+
+/* Rotate arrow when sidebar is open */
+#side-nav span#show-nav.open {
+    transform: rotate(180deg); /* Rotate when open */
+}
+
+/* Arrow icon styling */
+#side-nav span#show-nav i {
+    font-size: 24px; /* Adjust size if needed */
+}
+
+/* Ensure arrow animation is visible */
+#side-nav span#show-nav:hover i {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-name: bounce-right;
+    animation-iteration-count: infinite;
+}
+
+#side-nav span#show-nav.open:hover i {
+    animation-name: bounce-left;
+}
+
+#container {
+    padding: 0.5rem;
+    margin-top: 60px; /* Adjust to avoid header overlap */
+}
+
+#container.nav-open {
+    margin-left: 250px; /* Adjust based on sidebar width */
+}
+  
+  #container.card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(100% - var(--gutter));
+    width: calc(100% - var(--gutter));
+    overflow-x: auto;
+  }
+  
+  div.card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    width: 80%;
+    max-width: 1024px;
+    min-width: 512px;
+    background-color: #4b4ead;
+    color: white;
+    -webkit-box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 20px 2px rgba(0,0,0,0.5);
+  }
+  
+  /* animation stuff */
+  @keyframes bounce-right {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    
+    50% {
+      transform: translate3d(25%, 0, 0);
+    }
+    
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  @keyframes bounce-left {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    
+    50% {
+      transform: translate3d(25%, 0, 0);
+    }
+    
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  @keyframes bounce-up {
+    0% {
+      transform: rotate(180deg) translate3d(0, 0, 0);
+    }
+    
+    50% {
+      transform: rotate(180deg) translate3d(0, 25%, 0);
+    }
+    
+    100% {
+      transform: rotate(180deg) translate3d(0, 0, 0);
+    }
+  }
+  
+  @keyframes bounce-down {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    
+    50% {
+      transform: translate3d(0, 25%, 0);
+    }
+    
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .note-list {
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 10px;
+}
+
+.note-item {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+    transition: box-shadow 0.3s ease;
+    position: relative;
+}
+
+.note-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.note-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 50px);
+}
+
+.note-content {
+    font-size: 14px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.note-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note-title {
+    font-weight: bold;
+}
+
+.edit-note {
+    color: #007bff; /* Change color as needed */
+    font-size: 18px; /* Adjust size if needed */
+    text-decoration: none;
+}
+
+.delete-note {
+  color: #eb0c31; /* Change color as needed */
+  font-size: 18px; /* Adjust size if needed */
+  text-decoration: none;
+}
+
+.edit-note:hover {
+    color: #0056b3; /* Darker color on hover */
+}
+
+
+.delete-note:hover {
+  color: #b40101d0; /* Darker color on hover */
+}
+
+.note-actions {
+    margin-top: 10px;
+}
+
+.note-actions a {
+    /* color: #333; */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+/* .note-actions a:hover {
+    color: #007bff;
+} */

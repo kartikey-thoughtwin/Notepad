@@ -3,9 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from instance.config import Config
 from flask_restx import Api
+from flask_cors import CORS
+
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 api = Api(app, version="1.0", title="Notes API", description="A simple Notes API")
 # Initialize database

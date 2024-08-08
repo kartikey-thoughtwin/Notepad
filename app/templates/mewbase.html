@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteShell</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tiny.cloud/1/3h4yi3jkr8dhr3crvor6fnobprejz4ck9th49cyxwig5ehgh/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Noteshell</h1>
+    </header>
+    <nav id="side-nav">
+        <ul>
+            <li><a href="/home">Home</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+        <span id="show-nav"><i class="material-icons">arrow_forward</i></span>
+    </nav>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>All Notes</h5>
+                <div class="note-list">
+                    {% for note in context.notes %}
+                    <div class="note-item">
+                        <div class="note-header">
+                            <div class="note-title">{{ note.title }}</div>
+                        </div>
+                        <!-- <div class="note-content">{{ note.content | safe }}</div> -->
+                        <div class="note-actions">
+                            <!-- <a href="#" class="edit-note" data-id="{{ note.id }}"><i class="fas fa-pencil-alt"></i></a> -->
+                            <a href="#" class="edit-note" data-id="{{ note.id }}"><i class="fas fa-eye"></i></a> <!-- Eye button -->
+                            <a href="#" class="delete-note" data-id="{{ note.id }}"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="note-form">
+                    <h5>New Note</h5>
+                    <form id="createNoteForm">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="title" placeholder="Note Title">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="noteCategory" name="noteCategory">
+                                <option value="" disabled selected>---  Select Category  ---</option>
+                                {% for category in context.categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" id="noteContent" name="content" rows="8" placeholder="Note Content"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Note</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+        
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        CKEDITOR.editorConfig = function( config ) {
+            config.versionCheck = false;
+        };
+        CKEDITOR.replace('noteContent', {
+            removePlugins: 'securityinfo'
+        });
+        var categories = {{ context.categories | tojson | safe }};
+    </script>
+   
+
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "opacity": "0.9"
+        }
+    </script>
+</body>
+</html>
