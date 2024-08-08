@@ -43,16 +43,23 @@ def validate_user_data(data):
         return {'Error': 'Please enter a valid name'}
 
     if User.query.filter_by(username=username).first():
-        print(User.query.filter_by(username=username).first().__dict__,"ggggggggggggggggggggggggggggggggggggggggg")
         return {'Error': 'Username already exists.'}
-
+    
+    if email == '':
+        return {'Error': 'Please enter Email'}
+    
+    if password == '':
+        return {'Error': 'Please enter Password'}
+    
+    if username == '':
+        return {'Error': 'Please enter Username'}
+    
     if len(str(username)) <= 4 or str(username).strip() == "" or username is None or username != str(username):
         return {'Error': 'Username must contain at least 5 characters'}
     
     if User.query.filter_by(email=email).first():
         return {'Error': 'Email already present'}
-        
-
+    
     if email is None:
         return {'Error': 'Please enter your email'}
 
@@ -64,11 +71,10 @@ def validate_user_data(data):
 class RegisterView(Resource):
     def post(self):
         try:
-            # breakpoint()
             data = request.get_json()
             validation_error = validate_user_data(data)
             if validation_error:
-                return Response(json.dumps({'error': str(validation_error)}), status=400, content_type="application/json")
+                return Response(json.dumps({'error': validation_error}), status=400, content_type="application/json")
 
             user = User(
                 name=data['name'],

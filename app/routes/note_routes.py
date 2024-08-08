@@ -303,8 +303,6 @@ class FilterNotesAPI(Resource):
                     )
             
            
-            
-
 
 api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
 api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
@@ -313,12 +311,3 @@ api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
 api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
 api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
 api.add_resource(FilterNotesAPI, "/notes/filter/", methods=["GET"])
-
-
-
-api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
-api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
-api.add_resource(NotesAPI, "/notes/post/", methods=["POST"])
-api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
-api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
-api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
