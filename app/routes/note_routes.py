@@ -29,6 +29,10 @@ def home():
         return render_template("imports/index.html", context=context)
     except SQLAlchemyError as e:
         return render_template("base.html", error=str(e))
+    
+@note_bp.route("/login", methods=["GET"])
+def login():
+        return render_template("login.html")
 
 
 class NotesAPI(Resource):
