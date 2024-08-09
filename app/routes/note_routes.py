@@ -36,8 +36,10 @@ def home():
             context = {
                 "notes": [note.to_dict() for note in notes],
                 "categories": [category.to_dict() for category in categories],
+                "user":user.name,
+                "user_email":user.email,
+                "username":user.username
             }
-
             return render_template("imports/index.html", context=context)
 
         # Case 2: User is not authorized, try refreshing the tokens
