@@ -1,19 +1,19 @@
-from flask import Blueprint, request, jsonify, Response, make_response
+from flask import Blueprint, request, jsonify, Response, make_response, redirect, url_for, render_template
 from flask_restful import Resource, Api
 from app import app, db
 from flask_bcrypt import Bcrypt
 from app.models.user import User
 import re
-from flask import request, Blueprint, Response, render_template
 from flask_jwt_extended import (
-    JWTManager, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies,
-    jwt_required, get_jwt_identity, get_jwt,unset_jwt_cookies
+    JWTManager, create_access_token, create_refresh_token, set_access_cookies,
+    jwt_required, get_jwt_identity, get_jwt, unset_jwt_cookies, verify_jwt_in_request, exceptions as jwt_exceptions
 )
-from datetime import datetime, timezone
-from flask_jwt_extended.exceptions import NoAuthorizationError, JWTDecodeError, RevokedTokenError
 import json
 
+
+
 user_bp = Blueprint('users', __name__)
+
 api = Api(user_bp)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
@@ -21,16 +21,70 @@ jwt = JWTManager(app)
 # A set to store revoked tokens (for demonstration purposes; use a more persistent storage in production)
 revoked_tokens = set()
 
-@user_bp.route("/register", methods=['GET','POST'])
+
+@user_bp.route("/login", methods=['GET', 'POST'])
+@jwt_required(optional=True)  # Allow access without requiring a valid token
+def login():
+    try:
+        # Attempt to verify JWT token
+        verify_jwt_in_request(optional=True)
+        if get_jwt_identity():
+            # If the user is authenticated, redirect to home
+            return redirect(url_for('notes.home'))
+    except jwt_exceptions.NoAuthorizationError:
+        # No token or missing token - allow access to the login page
+        pass
+    except jwt_exceptions.ExpiredSignatureError:
+        # Expired token - allow access to the login page
+        pass
+    except Exception as e:
+        # Other unexpected exceptions
+        print(e)
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+
+    # If the request method is GET, show the login page
+    if request.method == 'GET':
+        return render_template("login.html")
+    
+    # If the request method is POST, process the login form
+    if request.method == 'POST':
+        obj = LoginView()
+        return obj.post()
+
+    
+
+@user_bp.route("/register", methods=['GET', 'POST'])
+@jwt_required(optional=True)  # Allow access without requiring a valid token
 def create():
-    if request.method=='GET':
+    try:
+        # Attempt to verify JWT token
+        verify_jwt_in_request(optional=True)
+        if get_jwt_identity():
+            # If the user is authenticated, redirect to home
+            return redirect(url_for('notes.home'))
+    except jwt_exceptions.NoAuthorizationError:
+        # No token or missing token - allow access to the registration page
+        pass
+    except jwt_exceptions.ExpiredSignatureError:
+        # Expired token - allow access to the registration page
+        pass
+    except Exception as e:
+        # Other unexpected exceptions
+        print(e)
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+
+    # If the request method is GET, show the registration page
+    if request.method == 'GET':
         return render_template("registration.html")
+    
+    # If the request method is POST, process the registration form
     if request.method == 'POST':
         obj = RegisterView()
         return obj.post()
 
+
+
 def validate_user_data(data):
-    # breakpoint()
     email = data.get("email")
     username = data.get("username", None)
     name = data.get("name", None)
@@ -103,8 +157,13 @@ class LoginView(Resource):
                 refresh_token = create_refresh_token(identity=user.id)
 
                 response = jsonify({'message': 'Login Success'})
-                set_access_cookies(response, access_token)
-                set_refresh_cookies(response, refresh_token)
+
+                # Set domain to None so it works on localhost and IP
+                domain = request.host.split(':')[0]  # Extract domain from request host
+
+                response.set_cookie('access_token_cookie', access_token, httponly=True, secure=False, samesite='Lax', domain=domain)
+                response.set_cookie('refresh_token_cookie', refresh_token, httponly=True, secure=False, samesite='Lax', domain=domain)
+
                 return response
             else:
                 return jsonify({'message': 'Login failed'})
@@ -134,7 +193,6 @@ class LogoutView(Resource):
     @jwt_required()
     def post(self):
         try:
-            print("HERERE")
             jti = get_jwt()["jti"]
             revoked_tokens.add(jti)
             
@@ -147,9 +205,9 @@ class LogoutView(Resource):
         except Exception as e:
             return jsonify({'message': 'An error occurred', 'error': str(e)})
             
-@app.errorhandler(NoAuthorizationError)
-def handle_no_auth_error(e):
-    return jsonify({'message': 'Token is missing'}), 401
+# @app.errorhandler(NoAuthorizationError)
+# def handle_no_auth_error(e):
+#     return jsonify({'message': 'Token is missing'}), 401
 
 class HomeView(Resource):
     @jwt_required()

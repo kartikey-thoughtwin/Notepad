@@ -1,51 +1,68 @@
 from curses import meta
 from datetime import date, datetime
 from flask_restx import Resource
-from flask import request, Blueprint, Response, render_template, session
-from flask_restx import Resource
-from flask import request, Blueprint, Response, render_template
+from flask import request, Blueprint, Response, render_template, redirect, url_for
 from app import api, db
 from app.models import Note, Category, User
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound
 import json
 from app.utils.utils import validate_note_data, make_response
-from sqlalchemy import func
-from sqlalchemy import and_
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy import func, and_
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, create_access_token, set_access_cookies
 
 
 note_bp = Blueprint("notes", __name__)
 
 
+
 @note_bp.route("/home", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=True)
 def home():
     try:
         current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
 
-        print(user.__dict__)
+        # Case 1: User is authorized, proceed to home page
+        if current_user_id:
+            user = User.query.get(current_user_id)
 
-        if not user:
-            return render_template("base.html", error="User not found")
+            if not user:
+                # Redirect to login page if user not found (though unlikely)
+                return redirect(url_for('users.login'))
 
-        notes = Note.query.filter_by(user_id=current_user_id).all()
-        # categories = Category.query.filter_by(user_id=current_user_id).all()
-        categories = Category.query.all()
+            notes = Note.query.filter_by(user_id=current_user_id).all()
+            categories = Category.query.all()
 
-        context = {
-            "notes": [note.to_dict() for note in notes],
-            "categories": [category.to_dict() for category in categories],
-        }
+            context = {
+                "notes": [note.to_dict() for note in notes],
+                "categories": [category.to_dict() for category in categories],
+            }
 
-        return render_template("imports/index.html", context=context)
+            return render_template("imports/index.html", context=context)
+
+        # Case 2: User is not authorized, try refreshing the tokens
+        try:
+            jwt_data = get_jwt()
+            if jwt_data.get('type') == 'refresh':
+                # Create a new access token
+                new_access_token = create_access_token(identity=current_user_id)
+
+                # Create a response with the home page
+                response = redirect(url_for('notes.home'))
+                set_access_cookies(response, new_access_token)
+                return response
+        except Exception as e:
+            print(f"Error refreshing token: {str(e)}")
+
+        # Case 3: Both tokens are expired, redirect to login page
+        return redirect(url_for('users.login'))
+
     except SQLAlchemyError as e:
-        return render_template("base.html", error=str(e))
-    
-@note_bp.route("/login", methods=["GET"])
-def login():
-        return render_template("login.html")
+        return redirect(url_for('users.login'))
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return redirect(url_for('users.login'))
+
 
 
 class NotesAPI(Resource):
@@ -311,9 +328,7 @@ class FilterNotesAPI(Resource):
                     message="Notes Retrieved Successfully",
                     data=[note.to_dict() for note in notes],
                     )
-            
-           
-            
+    
 
 
 api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
@@ -324,11 +339,3 @@ api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
 api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
 api.add_resource(FilterNotesAPI, "/notes/filter/", methods=["GET"])
 
-
-
-# api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
-# api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
-# api.add_resource(NotesAPI, "/notes/post/", methods=["POST"])
-# api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
-# api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
-# api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
