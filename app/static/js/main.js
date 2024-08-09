@@ -165,6 +165,11 @@ $(document).ready(function () {
             toastr.error('Title field cannot be empty');
             return;
         }
+        if (formData.title.length > 20) {
+            toastr.error('Title cannot exceed 20 characters');
+            return;
+        }
+        
         if (!formData.category_id) {
             toastr.error('Category field cannot be empty');
             return;
@@ -226,4 +231,25 @@ $(document).ready(function () {
     // ******************************** JS For Logout ******************************** //
 
 
+    $(document).ready(function () {
+
+        // Function to check if there is data in notes
+        function hasNotesData() {
+            return !!$('.note-item').length;
+        }
+    
+        // Handle the click event on the notes link
+        $('#notes-link').on('click', function (e) {
+            if (!hasNotesData()) {
+                e.preventDefault(); // Prevent the collapse if no data exists
+                toastr.error('No notes available to display');
+            } else {
+                // Proceed with the collapse if data exists
+                const target = $(this).attr('href');
+                $(target).collapse('toggle');
+            }
+        });
+    
+    });
 });
+
