@@ -3,16 +3,19 @@ from flask_restful import Resource, Api
 from app import app, db
 from flask_bcrypt import Bcrypt
 from app.models.user import User
+from app.models.note import Note
+from app.models.category import Category
 import re
 from flask_jwt_extended import (
-    JWTManager, create_access_token, create_refresh_token, set_access_cookies,
+    JWTManager, create_access_token, create_refresh_token, set_access_cookies, decode_token,
     jwt_required, get_jwt_identity, get_jwt, unset_jwt_cookies, verify_jwt_in_request, exceptions as jwt_exceptions
 )
 import json
-
-
+from datetime import datetime
+import pytz
 
 user_bp = Blueprint('users', __name__)
+
 
 api = Api(user_bp)
 bcrypt = Bcrypt(app)
@@ -22,34 +25,9 @@ jwt = JWTManager(app)
 revoked_tokens = set()
 
 
-@user_bp.route("/login", methods=['GET', 'POST'])
-@jwt_required(optional=True)  # Allow access without requiring a valid token
+@user_bp.route("/login", methods=['GET'])
 def login():
-    try:
-        # Attempt to verify JWT token
-        verify_jwt_in_request(optional=True)
-        if get_jwt_identity():
-            # If the user is authenticated, redirect to home
-            return redirect(url_for('notes.home'))
-    except jwt_exceptions.NoAuthorizationError:
-        # No token or missing token - allow access to the login page
-        pass
-    except jwt_exceptions.ExpiredSignatureError:
-        # Expired token - allow access to the login page
-        pass
-    except Exception as e:
-        # Other unexpected exceptions
-        print(e)
-        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
-
-    # If the request method is GET, show the login page
-    if request.method == 'GET':
-        return render_template("login.html")
-    
-    # If the request method is POST, process the login form
-    if request.method == 'POST':
-        obj = LoginView()
-        return obj.post()
+    return render_template("login.html")
 
     
 
@@ -148,15 +126,16 @@ class LoginView(Resource):
     def post(self):
         try:
             data = request.get_json()
-            username = data['username']
-            password = data['password']
+            username = data.get('username', None)
+            password = data.get('password', None)
 
             user = User.query.filter_by(username=username).first()
+
             if user and bcrypt.check_password_hash(user.password_hash, password):
                 access_token = create_access_token(identity=user.id)
                 refresh_token = create_refresh_token(identity=user.id)
 
-                response = jsonify({'message': 'Login Success'})
+                response = jsonify({'success': True, 'message': 'Login Success'})
 
                 # Set domain to None so it works on localhost and IP
                 domain = request.host.split(':')[0]  # Extract domain from request host
@@ -177,26 +156,34 @@ class TokenRefreshView(Resource):
     @jwt_required(refresh=True)
     def post(self):
         try:
+
             '''By this post method passing a refresh token,
                User will get new access token'''
-            current_user = get_jwt_identity()
-            access_token = create_access_token(identity=current_user)
-            response = jsonify({'message': 'Token refreshed'})
-            set_access_cookies(response, access_token)
-            return response
+            
+            jwt_data = get_jwt()
+        
+            if jwt_data.get('type') == 'refresh':
+            
+                current_user = get_jwt_identity()
+                access_token = create_access_token(identity=current_user)
+                response = jsonify({'status':200,'success': True,'message': 'Token refreshed'})
+                set_access_cookies(response, access_token)
+                return response
+            
+            return jsonify({"success":False, "message": "Invalid token type"}), 401
 
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
         
 
 class LogoutView(Resource):
-    @jwt_required()
     def post(self):
         try:
-            jti = get_jwt()["jti"]
-            revoked_tokens.add(jti)
+            # jti = get_jwt()["jti"]
+            # revoked_tokens.add(jti)
             
-            response = jsonify({"message": "Successfully logged out"})
+            response = jsonify({'status':200,'success': True, "message": "Successfully logged out"})
+            unset_jwt_cookies(response)
             response.delete_cookie('access_token_cookie')
             response.delete_cookie('refresh_token_cookie')
             
@@ -227,7 +214,7 @@ def check_if_token_revoked(jwt_header, jwt_payload):
 
 # Define the API resource routes
 api.add_resource(RegisterView, "/register", methods=['POST'])
-api.add_resource(LoginView, "/login", methods=['POST'])
+api.add_resource(LoginView, "/token/auth", methods=['POST'])
 api.add_resource(TokenRefreshView, "/token/refresh", methods=['POST'])
 api.add_resource(LogoutView, "/logout", methods=['POST'])
 api.add_resource(HomeView,'/home',methods=['POST'])

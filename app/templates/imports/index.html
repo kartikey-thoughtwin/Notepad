@@ -94,8 +94,8 @@
                         <div class="note-item">
                           <div class="note-title">{{note.title}}</div>
                           <div class="note-actions">
-                              <a href="#" class="edit-note" data-id={{note.id}} style="width: 30px; margin-left: -15px; display: inline-block; text-align: center;"><i class="fas fa-pencil-alt"></i></a>
-                              <a href="#" class="delete-note" data-id="{{note.id}}" style="width: 30px; margin-left: -15px;display: inline-block; text-align: center;"><i class="fas fa-trash"></i></a>
+                              <a href="#" class="edit-note" style="width: 30px; margin-left: -15px; margin-right: 25px; display: inline-block; text-align: center; cursor: default;"><i id="note-edit" data-id={{note.id}} class="fas fa-pencil-alt" style="cursor: pointer;"></i></a>
+                              <a href="#" class="delete-note" style="width: 30px; margin-left: -40px;display: inline-block; text-align: center; cursor: default;"><i id="note-delete" data-id="{{note.id}}" class="fas fa-trash" style="cursor: pointer;"></i></a>
                           </div>
                       </div>
                       </li>

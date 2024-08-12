@@ -16,8 +16,8 @@ function updateRecords() {
             <div class="note-item">
                 <div class="note-title">${note.title}</div>
                 <div class="note-actions">
-                    <a href="#" class="edit-note" data-id="${note.id}" style="width: 30px; margin-left: -15px; display: inline-block; text-align: center;"><i class="fas fa-pencil-alt"></i></a>
-                    <a href="#" class="delete-note" data-id="${note.id}" style="width: 30px; margin-left: -15px;display: inline-block; text-align: center;"><i class="fas fa-trash"></i></a>
+                    <a href="#" class="edit-note" style="width: 30px; margin-left: -15px; display: inline-block; text-align: center;"><i id="note-edit" data-id="${note.id}" class="fas fa-pencil-alt"></i></a>
+                    <a href="#" class="delete-note" style="width: 30px; margin-left: -15px;display: inline-block; text-align: center;"><i id="note-delete" data-id="${note.id}" class="fas fa-trash"></i></a>
                 </div>
             </div>
         `).join('');
@@ -32,7 +32,7 @@ function updateRecords() {
 $(document).ready(function () {
 
     // Handle edit note click event
-    $(document).on('click', '.edit-note', function () {
+    $(document).on('click', '#note-edit', function () {
         var noteId = $(this).attr('data-id');
 
         // Get the note data via AJAX
@@ -116,7 +116,7 @@ $(document).ready(function () {
 
 
     // Handle delete note click event
-    $(document).on('click', '.delete-note', function (e) {
+    $(document).on('click', '#note-delete', function (e) {
         e.preventDefault();
         var noteId = $(this).attr('data-id');
 
