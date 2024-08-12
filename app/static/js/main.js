@@ -5,9 +5,42 @@ function ajaxCall(url, method, data, successCallback, errorCallback) {
         data: data ? JSON.stringify(data) : null,
         contentType: 'application/json',
         success: successCallback,
-        error: errorCallback
+        error: function(xhr, status, error) {
+            if (xhr.status === 401) {
+                // Attempt to refresh the token
+                $.ajax({
+                    url: '/token/refresh',
+                    method: 'POST',
+                    credentials: 'include',
+                    success: function() {
+                        // Retry the original request after successful token refresh
+                        $.ajax({
+                            url: url,
+                            method: method,
+                            data: data ? JSON.stringify(data) : null,
+                            contentType: 'application/json',
+                            success: successCallback,
+                            error: errorCallback
+                        });
+                    },
+                    error: function() {
+                        // If refresh fails, redirect to login
+                        window.location.href = '/login';
+                    }
+                });
+            } else {
+                // Call the provided errorCallback for other status codes
+                if (errorCallback) {
+                    errorCallback(xhr, status, error);
+                }
+            }
+        }
     });
 }
+
+
+
+
 
 
 function updateRecords() {

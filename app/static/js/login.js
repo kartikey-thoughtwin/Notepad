@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("CALLEDDDDD")
-    // Check for the refresh token by calling the token refresh endpoint
+    checkAndRefreshToken();
+});
+
+function checkAndRefreshToken() {
     fetch('/token/refresh', {
         method: 'POST',
         credentials: 'include' // This ensures cookies are sent with the request
@@ -11,15 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
             window.location.href = "/home";
         } else {
             // If the refresh token is expired, logout the user
-            fetch('/logout', {
-                method: 'POST',
-                credentials: 'include'
-            }).then(() => {
-                // Clear all cookies
-                document.cookie.split(";").forEach((cookie) => {
-                    document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-                });
-            });
+            logoutUser();
         }
     })
     .catch(error => {
@@ -27,7 +21,21 @@ document.addEventListener("DOMContentLoaded", function() {
         // Handle any errors (like network issues) by redirecting to login
         window.location.href = "/login";
     });
-});
+}
+
+function logoutUser() {
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'include'
+    }).then(() => {
+        // Clear all cookies
+        document.cookie.split(";").forEach((cookie) => {
+            document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        // Redirect to login after logout
+        // window.location.href = "/login";
+    });
+}
 
 
 
