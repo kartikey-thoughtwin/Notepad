@@ -149,7 +149,7 @@ h4 {
 
 .h5,
 h5 {
-   font-size: 1.3rem;
+   font-size: 2rem;
    font-weight: 400
 }
 
@@ -178,7 +178,8 @@ h3,
 h4,
 h5,
 h6 {
-   line-height: 1.5
+   line-height: 3.5;
+   text-align: center;
 }
 
 .h1 a,
@@ -6181,7 +6182,8 @@ label.error {
    font-size: 1rem;
    font-weight: 500;
    opacity: 1;
-   border-radius: 3px
+   border-radius: 3px;
+   margin-left: 10px;
 }
 
 .btn:focus,
@@ -6302,7 +6304,7 @@ label.error {
 
 .btn-primary {
    background: #1572e8 !important;
-   border-color: #1572e8 !important
+   border-color: #1572e8 !important;
 }
 
 .btn-primary:disabled,
