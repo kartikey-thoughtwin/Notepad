@@ -1,3 +1,40 @@
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("CALLEDDDDD")
+    // Check for the refresh token by calling the token refresh endpoint
+    fetch('/token/refresh', {
+        method: 'POST',
+        credentials: 'include' // This ensures cookies are sent with the request
+    })
+    .then(response => {
+        if (response.status === 200) {
+            // Redirect to home if token refresh is successful
+            window.location.href = "/home";
+        } else {
+            // If the refresh token is expired, logout the user
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include'
+            }).then(() => {
+                // Clear all cookies
+                document.cookie.split(";").forEach((cookie) => {
+                    document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error refreshing token:', error);
+        // Handle any errors (like network issues) by redirecting to login
+        window.location.href = "/login";
+    });
+});
+
+
+
+
+
+
+
 // ******************************** Helper functions ******************************** // 
 
 function setCookie(name, value, days) {
@@ -71,6 +108,20 @@ $(document).ready(function() {
 
     // ******************************** JS For UI ******************************** //
 
+
+
+    // ******************************** JS For Validation ******************************** //
+
+
+
+    
+
+
+
+    // ******************************** JS For Validation ******************************** //
+
+
+
     // ******************************** JS For Login ******************************** // 
     $(document).ready(function() {
         $('#username').val('');
@@ -100,7 +151,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'POST',
-            url: '/login',
+            url: '/token/auth',
             data: JSON.stringify(data),
             contentType: 'application/json',
             success: function(response) {

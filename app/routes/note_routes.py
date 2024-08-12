@@ -9,18 +9,38 @@ from werkzeug.exceptions import NotFound
 import json
 from app.utils.utils import validate_note_data, make_response
 from sqlalchemy import func, and_
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, create_access_token, set_access_cookies
-
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, create_access_token, set_access_cookies,verify_jwt_in_request
 
 note_bp = Blueprint("notes", __name__)
 
 
 
 @note_bp.route("/home", methods=["GET"])
-@jwt_required(optional=True)
 def home():
     try:
+        
+        try:
+            verify_jwt_in_request()
+        except Exception as e:
+            try:
+                jwt_data = get_jwt()
+                current_user_id = get_jwt_identity()
+
+                if jwt_data.get('type') == 'refresh':
+                    # Create a new access token
+                    new_access_token = create_access_token(identity=current_user_id)
+
+                    # Create a response with the home page
+                    response = redirect(url_for('notes.home'))
+                    set_access_cookies(response, new_access_token)
+                    return response
+            except Exception as e:
+                return redirect(url_for('users.login'))
+            
         current_user_id = get_jwt_identity()
+
+        # Check if the token is valid or expired
+        jwt_data = get_jwt()
 
         # Case 1: User is authorized, proceed to home page
         if current_user_id:
@@ -41,20 +61,6 @@ def home():
                 "username":user.username
             }
             return render_template("imports/index.html", context=context)
-
-        # Case 2: User is not authorized, try refreshing the tokens
-        try:
-            jwt_data = get_jwt()
-            if jwt_data.get('type') == 'refresh':
-                # Create a new access token
-                new_access_token = create_access_token(identity=current_user_id)
-
-                # Create a response with the home page
-                response = redirect(url_for('notes.home'))
-                set_access_cookies(response, new_access_token)
-                return response
-        except Exception as e:
-            print(f"Error refreshing token: {str(e)}")
 
         # Case 3: Both tokens are expired, redirect to login page
         return redirect(url_for('users.login'))

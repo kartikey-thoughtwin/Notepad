@@ -121,11 +121,6 @@ header {
     color: #9a9a9a;
     transition: left 0.25s;
 }
-
-#side-nav ul li:hover {
-    cursor: pointer;
-}
-
 #side-nav ul li:hover::after {
     left: 0;
 }
