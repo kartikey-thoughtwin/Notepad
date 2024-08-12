@@ -645,33 +645,39 @@
         <!-- End Navbar -->
       </div>
 
-      <div class="container">
-        <div class="col-md-8 offset-md-2">
-          <div class="note-form">
-            <h5>New Note</h5>
-            <form id="createNoteForm">
-              <div class="form-group">
-                <input type="text" class="form-control" name="title" placeholder="Note Title">
-              </div>
-              <div class="form-group">
-                <select class="form-control" id="noteCategory" name="noteCategory">
-                  <option value="" disabled selected>--- Select Category ---</option>
-                  {% for category in context.categories %}
-                  <option value="{{ category.id }}">{{ category.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="form-group">
-                <textarea class="form-control" id="noteContent" name="content" rows="8"
-                  placeholder="Note Content"></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">Save Note</button>
-            </form>
+        <div class="container">
+          <div class="col-md-8 offset-md-2">
+            <div class="note-form">
+                <h5>New Note</h5>
+                <form id="createNoteForm">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="title" placeholder="Note Title">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="noteCategory" name="noteCategory">
+                            <option value="" disabled selected>---  Select Category  ---</option>
+                            {% for category in context.categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                      <select class="form-control" id="noteLabel" name="noteLabel">
+                          <option value="" disabled selected>---  Label  ---</option>
+                          {% for label in context.labels %}
+                              <option value="{{ label.id }}">{{ label.name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" id="noteContent" name="content" rows="8" placeholder="Note Content"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Note</button>
+                </form>
+            </div>
           </div>
-        </div>
-        <div id="example"></div>
-
-        <!-- <div class="page-inner">
+        
+          <!-- <div class="page-inner">
             <div
               class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
             >
