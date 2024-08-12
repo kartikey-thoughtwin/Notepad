@@ -310,11 +310,11 @@ class FilterNotesAPI(Resource):
                 )
         elif 'category_name' in data:
                 # category = data.get("category_name")
-                cat = Category.query.filter_by(name=category)
-                ans = None
-                for i in cat:
-                    ans = i.id
-                note = Note.query.filter_by(category_id=ans).all() 
+                category_obj = Category.query.filter_by(name=category)
+                category_id = None
+                for i in category_obj:
+                    category_id = i.id
+                note = Note.query.filter_by(category_id=category_id).all() 
                 return make_response(
                     True,
                     message="Notes Retrieved Successfully",
@@ -332,6 +332,14 @@ class FilterNotesAPI(Resource):
                     )
     
 
+
+
+# api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
+# api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
+# api.add_resource(NotesAPI, "/notes/post/", methods=["POST"])
+# api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
+# api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
+# api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
 
 api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
 api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
