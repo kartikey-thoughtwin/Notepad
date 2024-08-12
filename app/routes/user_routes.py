@@ -1,7 +1,16 @@
 from flask import Blueprint, request, jsonify, Response, make_response, redirect, url_for, render_template
 from flask_restful import Resource, Api
 from app import app, db
+from flask import Blueprint, render_template, request, jsonify, Response
 from flask_bcrypt import Bcrypt
+from flask import Blueprint, render_template, request, jsonify, Response
+from flask_bcrypt import Bcrypt
+from app import app
+from flask import Blueprint, Config, request, jsonify
+from flask_bcrypt import Bcrypt 
+from app import app
+from flask import Blueprint, Config, request, jsonify
+from flask_bcrypt import Bcrypt 
 from app.models.user import User
 from app.models.note import Note
 from app.models.category import Category
@@ -104,6 +113,8 @@ class RegisterView(Resource):
             validation_error = validate_user_data(data)
             if validation_error:
                 return Response(json.dumps({'error': validation_error}), status=400, content_type="application/json")
+
+
             user = User(
                 name=data['name'],
                 username=data['username'],
@@ -117,10 +128,12 @@ class RegisterView(Resource):
             access_token = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
             
-            return jsonify({'message': 'User created', 'access_token': access_token, 'refresh_token': refresh_token})
 
+            return Response(json.dumps({'message': 'Created', 'access_token': access_token, 'refresh_token': refresh_token}), status=201, content_type="application/json")
         except Exception as e:
             return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
+
+
 
 class LoginView(Resource):
     def post(self):
@@ -190,11 +203,15 @@ class LogoutView(Resource):
             return response
             
         except Exception as e:
-            return jsonify({'message': 'An error occurred', 'error': str(e)})
+            return Response(json.dumps({'message': 'An error occurred', 'error': str(e)}), status=500, content_type="application/json")
+            
+
             
 # @app.errorhandler(NoAuthorizationError)
 # def handle_no_auth_error(e):
 #     return jsonify({'message': 'Token is missing'}), 401
+
+
 
 class HomeView(Resource):
     @jwt_required()

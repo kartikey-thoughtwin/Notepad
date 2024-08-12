@@ -3,7 +3,7 @@ from datetime import date, datetime
 from flask_restx import Resource
 from flask import request, Blueprint, Response, render_template, redirect, url_for
 from app import api, db
-from app.models import Note, Category, User
+from app.models import Note, Category, User, Label
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound
 import json
@@ -132,6 +132,7 @@ class NotesAPI(Resource):
                 content=data["content"],
                 user_id=current_user_id,
                 category_id=data["category_id"],
+                label_id = data["label_id"]
             )
 
             db.session.add(new_note)
@@ -316,11 +317,11 @@ class FilterNotesAPI(Resource):
                 )
         elif 'category_name' in data:
                 # category = data.get("category_name")
-                cat = Category.query.filter_by(name=category)
-                ans = None
-                for i in cat:
-                    ans = i.id
-                note = Note.query.filter_by(category_id=ans).all() 
+                category_obj = Category.query.filter_by(name=category)
+                category_id = None
+                for i in category_obj:
+                    category_id = i.id
+                note = Note.query.filter_by(category_id=category_id).all() 
                 return make_response(
                     True,
                     message="Notes Retrieved Successfully",
@@ -338,6 +339,14 @@ class FilterNotesAPI(Resource):
                     )
     
 
+
+
+# api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
+# api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
+# api.add_resource(NotesAPI, "/notes/post/", methods=["POST"])
+# api.add_resource(NotesAPI, "/notes/put/<int:note_id>/", methods=["PUT"])
+# api.add_resource(NotesAPI, "/notes/delete/<int:note_id>/", methods=["DELETE"])
+# api.add_resource(NotesAPI, "/notes/patch/<int:note_id>/", methods=["PATCH"])
 
 api.add_resource(NotesAPI, "/notes/list/", methods=["GET"])
 api.add_resource(NotesAPI, "/notes/get/<int:note_id>/", methods=["GET"])
