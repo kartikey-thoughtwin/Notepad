@@ -3,7 +3,7 @@ from datetime import date, datetime
 from flask_restx import Resource
 from flask import request, Blueprint, Response, render_template, redirect, url_for
 from app import api, db
-from app.models import Note, Category, User
+from app.models import Note, Category, User, Label
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import NotFound
 import json
@@ -132,6 +132,7 @@ class NotesAPI(Resource):
                 content=data["content"],
                 user_id=current_user_id,
                 category_id=data["category_id"],
+                label_id = data["label_id"]
             )
 
             db.session.add(new_note)
