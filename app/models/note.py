@@ -1,10 +1,12 @@
 from datetime import datetime
 from app import db
+from sqlalchemy.dialects.postgresql import JSON
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
+    content = db.Column(db.Text, nullable=True)
+    spreadsheet_data = db.Column(JSON, nullable=True) # To add spreadsheet column...........
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))

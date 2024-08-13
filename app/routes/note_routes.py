@@ -121,6 +121,9 @@ class NotesAPI(Resource):
         try:
             current_user_id = get_jwt_identity()
             data = request.get_json()
+            spreadsheet_data = data.get('spreadsheet_data')
+            content = data.get("content",None)
+            label_id = data.get("label_id",None)
             validation_result = validate_note_data(data)
             if not validation_result["status"]:
                 return make_response(
@@ -129,10 +132,11 @@ class NotesAPI(Resource):
 
             new_note = Note(
                 title=data["title"],
-                content=data["content"],
+                content=content,
                 user_id=current_user_id,
+                spreadsheet_data=spreadsheet_data,
                 category_id=data["category_id"],
-                label_id = data["label_id"]
+                label_id = label_id
             )
 
             db.session.add(new_note)

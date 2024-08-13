@@ -253,3 +253,57 @@ $(document).ready(function () {
     });
 });
 
+
+// SPREADSHEET .................
+
+const container = document.querySelector('#example');
+
+const hot = new Handsontable(container, {
+    data: Handsontable.helper.createSpreadsheetData(5, 10),    rowHeaders: true,
+    colHeaders: true,
+    height: 'auto',
+    autoWrapRow: true,
+    autoWrapCol: true,
+    licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+});
+
+function submitNote() {
+    // Get the selected category ID
+    const categoryId = document.getElementById('noteCategoryex').value;
+
+    // Prepare the note data
+    const noteData = {
+        title: document.getElementById('noteTitle').value,
+        spreadsheet_data: hot.getData(),  // Get spreadsheet data
+        category_id: categoryId  // Get category ID from the dropdown
+    };
+
+    console.log("Note data to be sent:", noteData);
+
+    fetch('/notes/post/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(noteData)
+    })
+    .then(response => {
+        console.log("Response status:", response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Note saved:', data);
+        toastr.success('Spreadsheet created successfully');
+        // Optionally, reset the form fields or provide feedback to the user
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// Attach event listener to the submit button
+document.getElementById('submitNoteButton').addEventListener('click', submitNote);
+
+
+
+//////////////////////////////////////////////////////////

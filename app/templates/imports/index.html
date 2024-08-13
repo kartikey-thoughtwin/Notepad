@@ -85,7 +85,7 @@
                       <div class="note-item">
                         <div class="note-title">{{note.title}}</div>
                         <div class="note-actions">
-                          <a href="#" class="edit-note"
+                          <a href="#" class="edit-note" id="note-action"
                             style="width: 30px; margin-left: -15px; margin-right: 25px; display: inline-block; text-align: center; cursor: default;"><i
                               id="note-edit" data-id={{note.id}} class="fas fa-pencil-alt"
                               style="cursor: pointer;"></i></a>
@@ -669,7 +669,33 @@
             </form>
           </div>
         </div>
-        <div id="example"></div>
+        <!-- <div id="example"></div>
+        <input type="text" id="noteTitle" placeholder="Enter note title">
+        <textarea id="noteContent" placeholder="Enter note content"></textarea>
+        <button id="submitNoteButton">Save Note</button> -->
+        <!--///////////////////=-->
+
+        <div class="form-group">
+          <label for="noteTitle" class="spreadsheet">Note Title</label>
+          <input type="text" class="form-control" id="noteTitle" name="noteTitle" placeholder="Enter note title">
+      </div>
+      
+      <div class="form-group">
+          <div id="example"></div>
+      </div>
+      
+      <div class="form-group">
+          <label for="noteCategory">Category</label>
+          <select class="form-control" id="noteCategoryex" name="noteCategory">
+              <option value="" disabled selected>--- Select Category ---</option>
+              {% for category in context.categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+          </select>
+      </div>
+      
+      <button id="submitNoteButton">Save Note</button>
+      
 
         <!-- <div class="page-inner">
             <div
@@ -1434,26 +1460,13 @@
 
   <script>
 
-    const container = document.querySelector('#example');
-    console.log(container, "HERE is container")
+// Initialize Handsontable
 
 
 
-    const hot = new Handsontable(container, {
-      data: [
-        ['Year', 'Tesla', 'Volvo', 'Toyota', 'Ford', 'Audi'],
-        ['2019', 10, 11, 12, 13],
-        ['2020', 20, 11, 14, 13],
-        ['2021', 30, 15, 12, 13],
-        ['2023', 12, 45, 78, 36]
-      ],
-      rowHeaders: true,
-      colHeaders: true,
-      height: 'auto',
-      autoWrapRow: true,
-      autoWrapCol: true,
-      licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
-    });
+
+
+
 
 
 
